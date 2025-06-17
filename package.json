@@ -3,6 +3,14 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "description": "Professional UI/UX analysis tool with AI-powered design evaluation and localization recommendations",
+  "author": "Sonia Zavaleta Toukkari",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sonitasvpublico/UXAnalysisApp.git"
+  },
+  "keywords": ["ux", "ui", "analysis", "accessibility", "localization", "design"],
   "scripts": {
     "dev": "vite",
     "build": "vite build",

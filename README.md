@@ -2,6 +2,27 @@
 
 A professional web application that analyzes UI designs and screenshots to identify usability issues, accessibility problems, and provides localization recommendations for global markets.
 
+## ⚠️ Usage Terms & License
+
+**This software is provided for educational, personal, and non-commercial use only.**
+
+### Commercial Use Restrictions
+- ❌ **No commercial use** without explicit written permission
+- ❌ **No selling** the software or derivative works
+- ❌ **No incorporating** into commercial products or services
+- ❌ **No profit-generating activities** using this software
+
+### Attribution Requirement
+- ✅ **Must include attribution**: "Sonia Zavaleta Toukkari - UXAnalysisApp"
+- ✅ **Must preserve copyright notices** in all copies
+
+### For Commercial Use
+If you want to use this software commercially, please contact:
+- **Author**: Sonia Zavaleta Toukkari
+- **Repository**: https://github.com/sonitasvpublico/UXAnalysisApp
+
+**License**: MIT License with Commercial Use Restrictions - see [LICENSE](LICENSE) file for full terms.
+
 ## Features
 
 - **AI-Powered Analysis**: Upload screenshots or UI designs to get comprehensive analysis

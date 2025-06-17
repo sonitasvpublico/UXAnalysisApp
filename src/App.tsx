@@ -1,3 +1,12 @@
+/**
+ * UXAnalysisApp - UI/UX Analysis Tool
+ * Copyright (c) 2025 Sonia Zavaleta Toukkari
+ * 
+ * This software is provided for educational, personal, and non-commercial use only.
+ * Commercial use requires explicit written permission from the copyright holder.
+ * Attribution required: "Sonia Zavaleta Toukkari - UXAnalysisApp"
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import FileUpload from './components/FileUpload';
