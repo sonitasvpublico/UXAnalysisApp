@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, Info, X, Eye, Download, Filter, Sparkles } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, X, Eye, Download, Filter, Sparkles, ChevronDown } from 'lucide-react';
 import type { AnalysisResult, Language } from '../types';
 import { getTranslation } from '../utils/translations';
+import ImageModal from './ImageModal';
 
 interface AnalysisResultsProps {
   results: AnalysisResult[];
@@ -9,6 +10,8 @@ interface AnalysisResultsProps {
   imageName: string;
   imageUrl: string;
   onExportReport: () => void;
+  targetCountry: string;
+  aiResults?: any;
 }
 
 const AnalysisResults: React.FC<AnalysisResultsProps> = ({ 
@@ -16,11 +19,14 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   currentLanguage, 
   imageName, 
   imageUrl,
-  onExportReport 
+  onExportReport,
+  targetCountry,
+  aiResults
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
   const [selectedResult, setSelectedResult] = useState<AnalysisResult | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
@@ -73,6 +79,20 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
     low: results.filter(r => r.severity === 'low').length,
   };
 
+  const handleExportClick = async () => {
+    try {
+      await onExportReport();
+    } catch (error) {
+      console.error('Error exporting report:', error);
+      const errorMessage = currentLanguage === 'es' ? 
+        'Error al exportar el reporte. Por favor intente de nuevo.' :
+        currentLanguage === 'fi' ? 
+        'Virhe raportin viennissä. Yritä uudelleen.' :
+        'Error exporting report. Please try again.';
+      alert(errorMessage);
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
@@ -84,7 +104,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent mb-1 sm:mb-2">
+                <h2 className="font-poppins text-2xl sm:text-3xl font-black bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent mb-1 sm:mb-2">
                   {getTranslation(currentLanguage, 'results')}
                 </h2>
                 <p className="text-sm sm:text-base text-gray-700 font-medium">
@@ -93,7 +113,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
               </div>
             </div>
             <button
-              onClick={onExportReport}
+              onClick={handleExportClick}
               className="mt-4 sm:mt-0 inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg sm:rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 text-sm sm:text-base"
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
@@ -140,21 +160,26 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   {currentLanguage === 'es' && 'Categoría'}
                   {currentLanguage === 'fi' && 'Kategoria'}
                 </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 font-medium transition-all duration-300 text-sm sm:text-base"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === 'all' ? 
-                        (currentLanguage === 'en' ? 'All Categories' : 
-                         currentLanguage === 'es' ? 'Todas las Categorías' : 
-                         'Kaikki Kategoriat') : 
-                        getTranslation(currentLanguage, `categories.${category}`)}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="appearance-none w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 font-medium transition-all duration-300 text-sm sm:text-base"
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>
+                        {category === 'all' ? 
+                          (currentLanguage === 'en' ? 'All Categories' : 
+                          currentLanguage === 'es' ? 'Todas las Categorías' : 
+                          'Kaikki Kategoriat') : 
+                          getTranslation(currentLanguage, `categories.${category}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <ChevronDown className="h-5 w-5" />
+                  </div>
+                </div>
               </div>
               <div className="flex-1">
                 <label className="block text-xs sm:text-sm font-bold text-gray-700 mb-1 sm:mb-2">
@@ -162,21 +187,26 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   {currentLanguage === 'es' && 'Gravedad'}
                   {currentLanguage === 'fi' && 'Vakavuus'}
                 </label>
-                <select
-                  value={selectedSeverity}
-                  onChange={(e) => setSelectedSeverity(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 font-medium transition-all duration-300 text-sm sm:text-base"
-                >
-                  {severities.map(severity => (
-                    <option key={severity} value={severity}>
-                      {severity === 'all' ? 
-                        (currentLanguage === 'en' ? 'All Severities' : 
-                         currentLanguage === 'es' ? 'Todas las Gravedades' : 
-                         'Kaikki Vakavuudet') : 
-                        getTranslation(currentLanguage, `severity.${severity}`)}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={selectedSeverity}
+                    onChange={(e) => setSelectedSeverity(e.target.value)}
+                    className="appearance-none w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 font-medium transition-all duration-300 text-sm sm:text-base"
+                  >
+                    {severities.map(severity => (
+                      <option key={severity} value={severity}>
+                        {severity === 'all' ? 
+                          (currentLanguage === 'en' ? 'All Severities' : 
+                          currentLanguage === 'es' ? 'Todas las Gravedades' : 
+                          'Kaikki Vakavuudet') : 
+                          getTranslation(currentLanguage, `severity.${severity}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                    <ChevronDown className="h-5 w-5" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -251,7 +281,8 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                 <img
                   src={imageUrl}
                   alt={imageName}
-                  className="w-full h-32 sm:h-48 object-cover rounded-lg sm:rounded-xl border-2 border-gray-200 shadow-lg"
+                  className="w-full h-32 sm:h-48 object-cover rounded-lg sm:rounded-xl border-2 border-gray-200 shadow-lg cursor-pointer"
+                  onClick={() => setModalOpen(true)}
                 />
                 {selectedResult?.coordinates && (
                   <div
@@ -264,6 +295,14 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                     }}
                   />
                 )}
+                {/* Modal de imagen grande con overlays */}
+                <ImageModal
+                  isOpen={modalOpen}
+                  onRequestClose={() => setModalOpen(false)}
+                  imageUrl={imageUrl}
+                  imageName={imageName}
+                  issues={results.filter(r => r.coordinates)}
+                />
               </div>
             </div>
 

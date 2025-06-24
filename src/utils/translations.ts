@@ -37,6 +37,7 @@ export const translations = {
       es: 'Spanish',
       fi: 'Finnish',
     },
+    target_market_label: 'Select Target Market',
   },
   es: {
     title: 'Herramienta de Análisis UI/UX',
@@ -74,6 +75,7 @@ export const translations = {
       es: 'Español',
       fi: 'Finlandés',
     },
+    target_market_label: 'Seleccionar Mercado Objetivo',
   },
   fi: {
     title: 'UI/UX Analysointityökalu',
@@ -111,6 +113,7 @@ export const translations = {
       es: 'Espanja',
       fi: 'Suomi',
     },
+    target_market_label: 'Valitse Kohdemarkkina',
   },
 };
 

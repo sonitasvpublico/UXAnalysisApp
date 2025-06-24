@@ -1,6 +1,7 @@
 import type { AnalysisResult, LocalizationAdvice, Language } from '../types';
+import { localizationRules } from './localizationRules';
 
-const getLocalizedAnalysisResults = (language: Language): AnalysisResult[] => {
+export const getLocalizedAnalysisResults = (language: Language): AnalysisResult[] => {
   const results = {
     en: [
       {
@@ -181,203 +182,240 @@ const getLocalizedAnalysisResults = (language: Language): AnalysisResult[] => {
   return results[language] || results.en;
 };
 
-const getLocalizedLocalizationAdvice = (language: Language): LocalizationAdvice[] => {
-  const advice = {
-    en: [
-      {
-        market: 'Spain',
-        language: 'Spanish',
-        priority: 'high' as const,
-        suggestions: [
-          'Text will expand 15-20% when translated - ensure adequate spacing',
-          'Use formal "usted" form for professional contexts',
-          'Consider Spanish color preferences (red and yellow are culturally significant)',
-          'Adapt currency formats to European standards (€1.234,56)',
-        ],
-        culturalNotes: [
-          'Spanish users prefer detailed product information',
-          'Trust indicators are crucial for Spanish e-commerce',
-          'Consider siesta hours for customer service availability',
-        ],
-      },
-      {
-        market: 'Mexico',
-        language: 'Spanish',
-        priority: 'high' as const,
-        suggestions: [
-          'Use Mexican Spanish variants and local terminology',
-          'Adapt to Mexican peso currency format ($1,234.56)',
-          'Consider mobile-first design due to high mobile usage',
-          'Include local payment methods (OXXO, SPEI)',
-        ],
-        culturalNotes: [
-          'Family-oriented messaging resonates well',
-          'Bright colors are generally well-received',
-          'Consider different time zones across Mexico',
-        ],
-      },
-      {
-        market: 'Finland',
-        language: 'Finnish',
-        priority: 'medium' as const,
-        suggestions: [
-          'Finnish text can be 30% longer - plan for text expansion',
-          'Use Finnish date format (dd.mm.yyyy)',
-          'Implement Finnish currency format (1 234,56 €)',
-          'Consider Nokia design principles for familiarity',
-        ],
-        culturalNotes: [
-          'Finns value privacy and data protection highly',
-          'Minimalist design aesthetic preferred',
-          'Direct, honest communication style works best',
-        ],
-      },
-    ],
-    es: [
-      {
-        market: 'España',
-        language: 'Español',
-        priority: 'high' as const,
-        suggestions: [
-          'El texto se expandirá 15-20% al traducirse - asegurar espaciado adecuado',
-          'Usar la forma formal "usted" para contextos profesionales',
-          'Considerar preferencias de color españolas (rojo y amarillo son culturalmente significativos)',
-          'Adaptar formatos de moneda a estándares europeos (€1.234,56)',
-        ],
-        culturalNotes: [
-          'Los usuarios españoles prefieren información detallada del producto',
-          'Los indicadores de confianza son cruciales para el comercio electrónico español',
-          'Considerar las horas de siesta para disponibilidad de atención al cliente',
-        ],
-      },
-      {
-        market: 'México',
-        language: 'Español',
-        priority: 'high' as const,
-        suggestions: [
-          'Usar variantes del español mexicano y terminología local',
-          'Adaptar al formato de peso mexicano ($1,234.56)',
-          'Considerar diseño móvil primero debido al alto uso móvil',
-          'Incluir métodos de pago locales (OXXO, SPEI)',
-        ],
-        culturalNotes: [
-          'Los mensajes orientados a la familia resuenan bien',
-          'Los colores brillantes son generalmente bien recibidos',
-          'Considerar diferentes zonas horarias en México',
-        ],
-      },
-      {
-        market: 'Finlandia',
-        language: 'Finlandés',
-        priority: 'medium' as const,
-        suggestions: [
-          'El texto finlandés puede ser 30% más largo - planificar para expansión de texto',
-          'Usar formato de fecha finlandés (dd.mm.yyyy)',
-          'Implementar formato de moneda finlandés (1 234,56 €)',
-          'Considerar principios de diseño Nokia para familiaridad',
-        ],
-        culturalNotes: [
-          'Los finlandeses valoran altamente la privacidad y protección de datos',
-          'Se prefiere estética de diseño minimalista',
-          'El estilo de comunicación directo y honesto funciona mejor',
-        ],
-      },
-    ],
-    fi: [
-      {
-        market: 'Espanja',
-        language: 'Espanja',
-        priority: 'high' as const,
-        suggestions: [
-          'Teksti laajenee 15-20% käännettäessä - varmista riittävä välistys',
-          'Käytä muodollista "usted" -muotoa ammatillisissa yhteyksissä',
-          'Harkitse espanjalaisia värimieltymyksiä (punainen ja keltainen ovat kulttuurisesti merkittäviä)',
-          'Mukaudu eurooppalaisiin valuuttaformaatteihin (€1.234,56)',
-        ],
-        culturalNotes: [
-          'Espanjalaiset käyttäjät suosivat yksityiskohtaisia tuotetietoja',
-          'Luottamusindikaattorit ovat ratkaisevia espanjalaisessa verkkokaupassa',
-          'Harkitse siesta-aikoja asiakaspalvelun saatavuudessa',
-        ],
-      },
-      {
-        market: 'Meksiko',
-        language: 'Espanja',
-        priority: 'high' as const,
-        suggestions: [
-          'Käytä meksikolaisia espanjan variantteja ja paikallista terminologiaa',
-          'Mukaudu Meksikon peso-valuuttaformaattiin ($1,234.56)',
-          'Harkitse mobiili-ensisijaista suunnittelua korkean mobiilikäytön vuoksi',
-          'Sisällytä paikalliset maksutavat (OXXO, SPEI)',
-        ],
-        culturalNotes: [
-          'Perhekeskeiset viestit resonoivat hyvin',
-          'Kirkkaat värit ovat yleensä hyvin vastaanotettuja',
-          'Harkitse eri aikavyöhykkeitä Meksikossa',
-        ],
-      },
-      {
-        market: 'Suomi',
-        language: 'Suomi',
-        priority: 'medium' as const,
-        suggestions: [
-          'Suomalainen teksti voi olla 30% pidempi - suunnittele tekstin laajentumista varten',
-          'Käytä suomalaista päivämääräformaattia (dd.mm.yyyy)',
-          'Toteuta suomalainen valuuttaformaatti (1 234,56 €)',
-          'Harkitse Nokia-suunnitteluperiaatteita tuttuuden vuoksi',
-        ],
-        culturalNotes: [
-          'Suomalaiset arvostavat yksityisyyttä ja tietosuojaa korkeasti',
-          'Minimalistista suunnitteluestetiikkaa suositaan',
-          'Suora, rehellinen viestintätyyli toimii parhaiten',
-        ],
-      },
-    ],
-  };
+// Esta función ahora será dinámica y usará las reglas
+const getDynamicLocalizationAdvice = (language: Language, countryCode: string): LocalizationAdvice[] => {
+  const rules = localizationRules[countryCode]?.rules;
+  const countryName = localizationRules[countryCode]?.countryName[language] || localizationRules[countryCode]?.countryName.en;
 
-  return advice[language] || advice.en;
+  if (!rules) {
+    return [{
+      id: 'no-rules',
+      title: 'No Specific Rules',
+      description: `No specific localization rules were found for ${countryName}. Using general best practices.`,
+      advice: `No specific localization rules found for ${countryName}.`,
+      category: 'general'
+    }];
+  }
+
+  const advice: LocalizationAdvice[] = [];
+
+  if (rules.dateFormat) {
+    advice.push({
+      id: 'date',
+      title: 'Date Formatting',
+      description: 'Ensure dates follow the local standard to avoid confusion.',
+      advice: rules.dateFormat[language] || rules.dateFormat.en,
+      category: 'format'
+    });
+  }
+  if (rules.currency) {
+    advice.push({
+      id: 'currency',
+      title: 'Currency Formatting',
+      description: 'Display prices and monetary values in the local currency and format.',
+      advice: rules.currency[language] || rules.currency.en,
+      category: 'format'
+    });
+  }
+  if (rules.formality) {
+    advice.push({
+      id: 'formality',
+      title: 'Tone of Voice',
+      description: 'Adjust the communication style to match local cultural norms of formality.',
+      advice: rules.formality[language] || rules.formality.en,
+      category: 'tone'
+    });
+  }
+
+  if (advice.length === 0) {
+    return [{
+      id: 'all-good',
+      title: 'Localization Looks Good',
+      description: `No specific localization advice for ${countryName}. The current setup seems appropriate.`,
+      advice: `No specific localization advice for ${countryName}. Looks good!`,
+      category: 'general'
+    }];
+  }
+
+  return advice;
 };
 
-export const analyzeImage = async (imageUrl: string, language: Language = 'en'): Promise<{
-  results: AnalysisResult[];
-  localizationAdvice: LocalizationAdvice[];
+// La función principal que se llama desde App.tsx
+export const analyzeImage = async (
+  language: Language,
+  targetCountry: string
+): Promise<{
+  analysis: AnalysisResult[];
+  localization: LocalizationAdvice[];
 }> => {
-  // Simulate AI analysis delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  // Simula una llamada a la API que podría fallar o tardar
+  await new Promise(resolve => setTimeout(resolve, 500)); 
 
-  const results = getLocalizedAnalysisResults(language);
-  const localizationAdvice = getLocalizedLocalizationAdvice(language);
+  const analysisResults = getLocalizedAnalysisResults(language);
+  const localizationAdvice = getDynamicLocalizationAdvice(language, targetCountry);
 
-  return { results, localizationAdvice };
-};
-
-export const exportAnalysisReport = (
-  results: AnalysisResult[],
-  localizationAdvice: LocalizationAdvice[],
-  imageName: string
-): void => {
-  const report = {
-    timestamp: new Date().toISOString(),
-    imageName,
-    summary: {
-      totalIssues: results.length,
-      criticalIssues: results.filter(r => r.severity === 'critical').length,
-      highPriorityIssues: results.filter(r => r.severity === 'high').length,
-    },
-    analysisResults: results,
-    localizationAdvice,
+  return {
+    analysis: analysisResults,
+    localization: localizationAdvice,
   };
-
-  const blob = new Blob([JSON.stringify(report, null, 2)], {
-    type: 'application/json',
-  });
-  
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `ui-analysis-report-${imageName}-${Date.now()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 };
+
+// Nueva función específica para obtener solo consejos de localización
+export const getLocalizationAdviceOnly = (
+  language: Language,
+  targetCountry: string
+): LocalizationAdvice[] => {
+  return getDynamicLocalizationAdvice(language, targetCountry);
+};
+
+export async function analyzeImageWithVisionAPI(base64Image: string): Promise<any> {
+  const apiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
+  const apiURL = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
+
+  if (!apiKey || apiKey === 'TU_API_key_AQUI') {
+    console.warn('Google Vision API key is not set. Using fallback analysis.');
+    // Devolver un objeto vacío para que el flujo principal sepa que debe usar el fallback.
+    return {};
+  }
+
+  try {
+    const response = await fetch(apiURL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        requests: [
+          {
+            image: {
+              content: base64Image,
+            },
+            features: [
+              { type: 'TEXT_DETECTION', maxResults: 10 },
+              { type: 'OBJECT_LOCALIZATION', maxResults: 10 },
+              { type: 'LABEL_DETECTION', maxResults: 10 },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json();
+      console.error('Google Vision API request failed:', errorBody);
+      throw new Error(`API Error: ${errorBody.error?.message || response.statusText}`);
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error('Error calling Google Vision API:', error);
+    // Re-lanzar el error para que el componente que llama (FileUpload) pueda manejarlo.
+    throw error;
+  }
+}
+
+/**
+ * Genera issues reales a partir de los resultados de la IA de Google Vision
+ * @param aiResults { labelAnnotations, localizedObjectAnnotations, textAnnotations }
+ * @param imageWidth ancho de la imagen (opcional)
+ * @param imageHeight alto de la imagen (opcional)
+ * @returns AnalysisResult[]
+ */
+export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: number, imageHeight?: number): AnalysisResult[] {
+  const results: AnalysisResult[] = [];
+  let idCounter = 1;
+
+  // 0. Baja resolución
+  if (imageWidth && imageHeight && (imageWidth < 400 || imageHeight < 400)) {
+    results.push({
+      id: `ai-${idCounter++}`,
+      category: 'design',
+      severity: 'high',
+      title: 'Low Image Resolution',
+      description: `The image resolution is low (${imageWidth}x${imageHeight}px). This can affect clarity and perceived quality.`,
+      suggestion: 'Use images of at least 800x600px for better analysis and presentation.',
+      impact: 'Low-res images may appear blurry or pixelated, reducing professionalism and accessibility.'
+    });
+  }
+
+  // 1. Si hay texto detectado, issue de accesibilidad (más específico)
+  if (aiResults.textAnnotations && aiResults.textAnnotations.length > 0) {
+    // El primer textAnnotation es el texto completo, los siguientes son palabras/frases
+    const mainText = aiResults.textAnnotations[0]?.description?.trim();
+    const topWords = aiResults.textAnnotations.slice(1, 4).map((t: any) => t.description).filter(Boolean);
+    // Bounding box del primer texto (si existe)
+    const vertices = aiResults.textAnnotations[1]?.boundingPoly?.vertices;
+    let box = undefined;
+    if (vertices && vertices.length >= 4) {
+      const xs = vertices.map((v: any) => v.x || 0);
+      const ys = vertices.map((v: any) => v.y || 0);
+      const x = Math.min(...xs);
+      const y = Math.min(...ys);
+      const width = Math.max(...xs) - x;
+      const height = Math.max(...ys) - y;
+      box = { x, y, width, height };
+    }
+    results.push({
+      id: `ai-${idCounter++}`,
+      category: 'accessibility',
+      severity: 'high',
+      title: 'Text Detected in Image',
+      description: `Detected text: "${mainText?.replace(/\n/g, ' ')}"${topWords.length ? `\nKey words: ${topWords.join(', ')}` : ''}${box ? `\nText area: ${box.width}x${box.height}px` : ''}. Ensure sufficient color contrast and readability.`,
+      suggestion: 'Check that all text in the image has enough contrast with the background and is legible for all users.',
+      impact: 'Low contrast or unreadable text can make your design inaccessible to users with visual impairments.',
+      ...(box ? { coordinates: box } : {})
+    });
+  }
+
+  // 2. Si hay personas detectadas, issue de privacidad
+  if (aiResults.labelAnnotations && aiResults.labelAnnotations.some((l: any) => l.description.toLowerCase().includes('person'))) {
+    results.push({
+      id: `ai-${idCounter++}`,
+      category: 'usability',
+      severity: 'medium',
+      title: 'Person Detected',
+      description: 'A person was detected in the image. Consider privacy implications if this is a personal photo.',
+      suggestion: 'Avoid sharing personal photos in public design analysis tools unless necessary.',
+      impact: 'Personal information may be exposed if people are visible in the image.',
+    });
+  }
+
+  // 3. Si hay más de 1 objeto igual, issue de usabilidad
+  if (aiResults.localizedObjectAnnotations && aiResults.localizedObjectAnnotations.length > 0) {
+    const objectCounts: Record<string, number> = {};
+    aiResults.localizedObjectAnnotations.forEach((obj: any) => {
+      const name = obj.name || obj.description || 'Object';
+      objectCounts[name] = (objectCounts[name] || 0) + 1;
+    });
+    Object.entries(objectCounts).forEach(([name, count]) => {
+      if (count > 1) {
+        results.push({
+          id: `ai-${idCounter++}`,
+          category: 'usability',
+          severity: 'low',
+          title: `Multiple "${name}" Objects Detected`,
+          description: `The image contains ${count} objects of type "${name}".`,
+          suggestion: `Ensure that repeated objects are intentional and do not clutter the design.`,
+          impact: 'Too many similar objects can reduce clarity and usability.',
+        });
+      }
+    });
+  }
+
+  // 4. Si hay muchos labels, issue de complejidad visual
+  if (aiResults.labelAnnotations && aiResults.labelAnnotations.length > 5) {
+    const labelNames = aiResults.labelAnnotations.map((l: any) => l.description).join(', ');
+    results.push({
+      id: `ai-${idCounter++}`,
+      category: 'design',
+      severity: 'medium',
+      title: 'High Visual Complexity',
+      description: `Many different elements were detected in the image: ${labelNames}. This may indicate visual clutter.`,
+      suggestion: 'Consider simplifying the design to improve focus and user experience.',
+      impact: 'Overly complex visuals can overwhelm users and reduce usability.',
+    });
+  }
+
+  return results;
+}

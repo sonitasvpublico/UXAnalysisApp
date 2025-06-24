@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Android keystore files
+*.jks
+*.keystore
+
+# Capacitor/Android build output
+android/app/build/

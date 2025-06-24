@@ -13,11 +13,24 @@ import FileUpload from './components/FileUpload';
 import LoadingSpinner from './components/LoadingSpinner';
 import AnalysisResults from './components/AnalysisResults';
 import LocalizationAdvice from './components/LocalizationAdvice';
+import AIDetectedElements from './components/AIDetectedElements';
 import { useLanguage } from './hooks/useLanguage';
-import { analyzeImage, exportAnalysisReport } from './utils/analysisEngine';
-import type { UploadedImage, AnalysisResult, LocalizationAdvice as LocalizationAdviceType } from './types';
-import { RefreshCw, Sparkles } from 'lucide-react';
+import { 
+  generateAnalysisResultsFromAI, 
+  getLocalizationAdviceOnly,
+  getLocalizedAnalysisResults
+} from './utils/analysisEngine';
+import type { 
+  UploadedImage, 
+  AnalysisResult, 
+  LocalizationAdvice as LocalizationAdviceType,
+  AIDetectionResult,
+  Language
+} from './types';
+import { RefreshCw, Sparkles, ChevronDown } from 'lucide-react';
 import { getTranslation } from './utils/translations';
+import { localizationRules } from './utils/localizationRules';
+import { generateBeautifulPDF } from './utils/pdfGenerator.ts';
 
 type AppState = 'upload' | 'analyzing' | 'results';
 
@@ -25,44 +38,89 @@ function App() {
   const { currentLanguage, changeLanguage } = useLanguage();
   const [appState, setAppState] = useState<AppState>('upload');
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
+  const [aiResults, setAiResults] = useState<any>(null);
   const [localizationAdvice, setLocalizationAdvice] = useState<LocalizationAdviceType[]>([]);
   const [activeTab, setActiveTab] = useState<'results' | 'localization'>('results');
   const analysisRequestId = useRef(0);
+  const [targetCountry, setTargetCountry] = useState('ES'); // Default to Spain
+  const [error, setError] = useState<string | null>(null);
 
-  // Re-run analysis when language or uploaded image changes
-  useEffect(() => {
-    const rerunAnalysis = async () => {
-      if (uploadedImage) {
-        setAppState('analyzing');
-        const requestId = ++analysisRequestId.current;
-        try {
-          const { results, localizationAdvice } = await analyzeImage(uploadedImage.url, currentLanguage);
-          // Only update if this is the latest request
-          if (analysisRequestId.current === requestId) {
-            setAnalysisResults(results);
-            setLocalizationAdvice(localizationAdvice);
-            setAppState('results');
-          }
-        } catch (error) {
-          if (analysisRequestId.current === requestId) {
-            setAppState('upload');
-          }
-        }
-      }
-    };
-    rerunAnalysis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentLanguage, uploadedImage]);
-
-  const handleFileUpload = async (image: UploadedImage) => {
-    setUploadedImage(image);
-    // No need to call analysis here, useEffect will handle it
+  // Nueva función para iniciar análisis
+  const handleStartAnalysis = () => {
+    setAppState('analyzing');
   };
 
-  const handleExportReport = () => {
-    if (uploadedImage) {
-      exportAnalysisReport(analysisResults, localizationAdvice, uploadedImage.name);
+  const handleFileUpload = async (
+    image: UploadedImage,
+    aiResultsFromUpload: any,
+    imgDims?: { width: number; height: number }
+  ) => {
+    setAppState('analyzing');
+    setUploadedImage(image);
+    if (imgDims) {
+      setImageDimensions(imgDims);
+    }
+    setAiResults(aiResultsFromUpload);
+
+    try {
+      let finalAnalysis: AnalysisResult[];
+
+      if (aiResultsFromUpload && Object.keys(aiResultsFromUpload).length > 0 && aiResultsFromUpload.responses && aiResultsFromUpload.responses.length > 0) {
+        console.log("Generando resultados desde la IA...", aiResultsFromUpload);
+        const visionData = aiResultsFromUpload.responses[0];
+        finalAnalysis = generateAnalysisResultsFromAI(visionData, imgDims?.width, imgDims?.height);
+        
+        // Si la IA no produjo ningún resultado procesable, usar fallback para no mostrar una pantalla vacía.
+        if (finalAnalysis.length === 0) {
+          console.log("La IA no generó resultados, usando fallback.");
+          finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
+        }
+
+      } else {
+        console.warn("No se recibieron resultados de la IA o la respuesta estaba vacía. Usando fallback.");
+        // Usamos los resultados genéricos como fallback
+        finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
+      }
+      
+      setAnalysisResults(finalAnalysis);
+
+      // La localización siempre se obtiene de forma independiente y dinámica.
+      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry);
+      setLocalizationAdvice(localizationData);
+
+      setAppState('results');
+    } catch (error) {
+      console.error('Error during analysis processing:', error);
+      setError(error instanceof Error ? error.message : 'An unknown error occurred');
+      // Importante: Volver a la pantalla de subida si hay un error crítico
+      setAppState('upload'); 
+    }
+  };
+
+  const handleExportReport = async () => {
+    if (uploadedImage && imageDimensions) {
+      try {
+        await generateBeautifulPDF({
+          results: analysisResults,
+          localizationAdvice,
+          imageName: uploadedImage.name,
+          imageUrl: uploadedImage.url,
+          imageDimensions,
+          currentLanguage,
+          targetCountry,
+          aiResults
+        });
+      } catch (error) {
+        console.error('Error exporting report:', error);
+        // Mostrar un mensaje de error al usuario
+        alert(currentLanguage === 'es' ? 
+          'Error al exportar el reporte. Por favor intente de nuevo.' :
+          currentLanguage === 'fi' ? 
+          'Virhe raportin viennissä. Yritä uudelleen.' :
+          'Error exporting report. Please try again.');
+      }
     }
   };
 
@@ -72,6 +130,7 @@ function App() {
     setAnalysisResults([]);
     setLocalizationAdvice([]);
     setActiveTab('results');
+    setImageDimensions(null);
   };
 
   return (
@@ -91,10 +150,33 @@ function App() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {appState === 'upload' && (
           <div className="animate-fade-in">
+            <div className="max-w-2xl mx-auto mb-8 text-center">
+              <label htmlFor="country-selector" className="inline-block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3">
+                  {getTranslation(currentLanguage, 'target_market_label')}
+              </label>
+              <div className="relative">
+                <select
+                    id="country-selector"
+                    value={targetCountry}
+                    onChange={(e) => setTargetCountry(e.target.value)}
+                    className="appearance-none w-full bg-white/80 backdrop-blur-sm border-2 border-slate-200/70 rounded-xl shadow-lg hover:border-purple-300/80 transition-all duration-300 py-3 pl-4 pr-10 text-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800/80 dark:border-slate-700 dark:text-white dark:hover:border-purple-500"
+                >
+                    {Object.keys(localizationRules).map((code) => (
+                        <option key={code} value={code} className="font-medium text-gray-900 dark:bg-gray-900 dark:text-white">
+                            {localizationRules[code].countryName[currentLanguage as Language] || localizationRules[code].countryName.en}
+                        </option>
+                    ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-600 dark:text-gray-400">
+                  <ChevronDown className="h-6 w-6" />
+                </div>
+              </div>
+            </div>
             <FileUpload 
               onFileUpload={handleFileUpload} 
               currentLanguage={currentLanguage}
               isAnalyzing={false}
+              onStartAnalysis={handleStartAnalysis}
             />
           </div>
         )}
@@ -155,13 +237,26 @@ function App() {
 
             {/* Tab Content */}
             {activeTab === 'results' && uploadedImage && (
-              <AnalysisResults
-                results={analysisResults}
-                currentLanguage={currentLanguage}
-                imageName={uploadedImage.name}
-                imageUrl={uploadedImage.url}
-                onExportReport={handleExportReport}
-              />
+              <>
+                {/* AI Detected Elements section - visible if aiResults exist */}
+                {aiResults && aiResults.responses && aiResults.responses[0] && (
+                  <AIDetectedElements
+                    results={aiResults.responses[0]}
+                    isLoading={false}
+                  />
+                )}
+                <div className="mt-8">
+                  <AnalysisResults
+                    results={analysisResults}
+                    currentLanguage={currentLanguage}
+                    imageName={uploadedImage.name}
+                    imageUrl={uploadedImage.url}
+                    onExportReport={handleExportReport}
+                    targetCountry={targetCountry}
+                    aiResults={aiResults}
+                  />
+                </div>
+              </>
             )}
 
             {activeTab === 'localization' && (
