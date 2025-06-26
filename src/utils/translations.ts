@@ -60,8 +60,28 @@ export const translations = {
       visualComplexityTitle: 'High Visual Complexity',
       visualComplexityDesc: 'Many different elements were detected in the image: {labels}. This may indicate visual clutter.',
       visualComplexitySuggestion: 'Consider simplifying the design to improve focus and user experience.',
-      visualComplexityImpact: 'Overly complex visuals can overwhelm users and reduce usability.'
+      visualComplexityImpact: 'Overly complex visuals can overwhelm users and reduce usability.',
+      localization: {
+        currencyTitle: "Potential Currency Mismatch",
+        currencyDesc: "Detected a '{symbol}' symbol. This might not be the correct currency for the selected market.",
+        dateTitle: "Potential Date Format Mismatch",
+        dateDesc: "Detected a date in '{format}' format. This might not be standard for the selected market."
+      }
     },
+    aboutModal: {
+      title: "About This Tool",
+      description: "This application leverages the power of Google's Vision AI to provide instant, automated analysis of UI/UX designs. Simply upload a screenshot of any interface to receive detailed feedback on accessibility, usability, and localization.",
+      feature1Title: "AI-Powered Analysis",
+      feature1Desc: "Detects elements, text, and objects in your image to identify potential design issues.",
+      feature2Title: "Global Localization",
+      feature2Desc: "Provides market-specific advice to ensure your design is culturally and technically appropriate.",
+      feature3Title: "In-Depth Reports",
+      feature3Desc: "Generates comprehensive reports with actionable suggestions to improve your design.",
+      footer: {
+        prefix: "A project by ",
+        suffix: "."
+      }
+    }
   },
   es: {
     title: 'Herramienta de Análisis UI/UX',
@@ -122,8 +142,28 @@ export const translations = {
       visualComplexityTitle: 'Alta complejidad visual',
       visualComplexityDesc: 'Se detectaron muchos elementos diferentes en la imagen: {labels}. Esto puede indicar saturación visual.',
       visualComplexitySuggestion: 'Considera simplificar el diseño para mejorar el enfoque y la experiencia del usuario.',
-      visualComplexityImpact: 'Visuales demasiado complejos pueden abrumar a los usuarios y reducir la usabilidad.'
+      visualComplexityImpact: 'Visuales demasiado complejos pueden abrumar a los usuarios y reducir la usabilidad.',
+      localization: {
+        currencyTitle: "Posible Incongruencia de Moneda",
+        currencyDesc: "Se detectó un símbolo '{symbol}'. Podría no ser la moneda correcta para el mercado seleccionado.",
+        dateTitle: "Posible Incongruencia de Formato de Fecha",
+        dateDesc: "Se detectó una fecha en formato '{format}'. Podría no ser el estándar para el mercado seleccionado."
+      }
     },
+    aboutModal: {
+      title: "Acerca de esta Herramienta",
+      description: "Esta aplicación utiliza el poder de la IA de Visión de Google para proporcionar análisis automáticos e instantáneos de diseños UI/UX. Simplemente sube una captura de pantalla de cualquier interfaz para recibir feedback detallado sobre accesibilidad, usabilidad y localización.",
+      feature1Title: "Análisis con IA",
+      feature1Desc: "Detecta elementos, texto y objetos en tu imagen para identificar posibles problemas de diseño.",
+      feature2Title: "Localización Global",
+      feature2Desc: "Proporciona consejos específicos del mercado para asegurar que tu diseño sea cultural y técnicamente apropiado.",
+      feature3Title: "Informes Detallados",
+      feature3Desc: "Genera informes completos con sugerencias prácticas para mejorar tu diseño.",
+      footer: {
+        prefix: "Un proyecto de ",
+        suffix: "."
+      }
+    }
   },
   fi: {
     title: 'UI/UX Analysointityökalu',
@@ -184,8 +224,28 @@ export const translations = {
       visualComplexityTitle: 'Korkea visuaalinen monimutkaisuus',
       visualComplexityDesc: 'Kuvasta löytyi monia erilaisia elementtejä: {labels}. Tämä voi viitata visuaaliseen sekavuuteen.',
       visualComplexitySuggestion: 'Harkitse suunnittelun yksinkertaistamista keskittymisen ja käyttökokemuksen parantamiseksi.',
-      visualComplexityImpact: 'Liian monimutkaiset visuaalit voivat hämmentää käyttäjiä ja heikentää käytettävyyttä.'
+      visualComplexityImpact: 'Liian monimutkaiset visuaalit voivat hämmentää käyttäjiä ja heikentää käytettävyyttä.',
+      localization: {
+        currencyTitle: "Mahdollinen Valuuttaepäjohdonmukaisuus",
+        currencyDesc: "Havaittiin symboli '{symbol}'. Tämä ei välttämättä ole oikea valuutta valitulle markkinalle.",
+        dateTitle: "Mahdollinen Päivämäärämuodon Epäjohdonmukaisuus",
+        dateDesc: "Havaittiin päivämäärä muodossa '{format}'. Tämä ei välttämättä ole standardi valitulle markkinalle."
+      }
     },
+    aboutModal: {
+      title: "Tietoja Työkalusta",
+      description: "Tämä sovellus hyödyntää Googlen Vision AI:n tehoa tarjotakseen välittömiä, automatisoituja analyysejä UI/UX-suunnitelmista. Lataa vain käyttöliittymän kuvakaappaus saadaksesi yksityiskohtaista palautetta saavutettavuudesta, käytettävyydestä ja lokalisoinnista.",
+      feature1Title: "Tekoälypohjainen Analyysi",
+      feature1Desc: "Tunnistaa elementtejä, tekstiä ja kohteita kuvastasi mahdollisten suunnitteluongelmien löytämiseksi.",
+      feature2Title: "Globaali Lokalisointi",
+      feature2Desc: "Tarjoaa markkinakohtaisia neuvoja varmistaaksesi, että suunnittelusi on kulttuurisesti ja teknisesti sopiva.",
+      feature3Title: "Yksityiskohtaiset Raportit",
+      feature3Desc: "Luo kattavia raportteja, joissa on käytännön ehdotuksia suunnittelusi parantamiseksi.",
+      footer: {
+        prefix: "Projektin on tehnyt ",
+        suffix: "."
+      }
+    }
   },
 };
 

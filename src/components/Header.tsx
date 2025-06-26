@@ -1,7 +1,8 @@
-import React from 'react';
-import { Eye, Globe, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Eye, Globe, Sparkles, Menu, X, Info, FileText } from 'lucide-react';
 import type { Language } from '../types';
 import { getTranslation } from '../utils/translations';
+import AboutModal from './AboutModal';
 
 interface HeaderProps {
   currentLanguage: Language;
@@ -9,6 +10,9 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+
   const languages: { code: Language; label: string; flag: string }[] = [
     { code: 'en', label: 'EN', flag: '🇺🇸' },
     { code: 'es', label: 'ES', flag: '🇪🇸' },
@@ -16,55 +20,113 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
   ];
 
   return (
-    <header className="bg-white/80 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-3 py-2 md:px-6 md:py-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          {/* Logo y título */}
-          <div className="flex flex-col items-center md:flex-row md:items-center md:space-x-4 w-full md:w-auto">
-            <div className="flex items-center space-x-2 md:space-x-4 justify-center w-full md:w-auto">
-              <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-1.5 md:p-3 rounded-lg md:rounded-2xl shadow-lg transform hover:scale-110 transition-transform duration-300">
-                <Eye className="h-4 w-4 md:h-8 md:w-8 text-white" />
-              </div>
-              <div className="flex items-center space-x-1.5 md:space-x-2">
-                <Sparkles className="h-3.5 w-3.5 md:h-5 md:w-5 text-purple-500" />
-                <h1 className="font-poppins text-sm md:text-2xl font-bold bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 bg-clip-text text-transparent text-center md:text-left">
+    <>
+      <header className="py-4 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-md">
+        <div className="container mx-auto flex items-center justify-between">
+          {/* Logo and Title */}
+           <div className="flex items-center space-x-2">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
+                <Eye className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-1.5">
+                <Sparkles className="h-4 w-4 text-purple-500" />
+                <h1 className="font-poppins text-xl font-bold bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 bg-clip-text text-transparent">
                   {getTranslation(currentLanguage, 'title')}
                 </h1>
               </div>
+              <p className="hidden md:block text-sm text-gray-500 font-semibold -mt-1">
+                {getTranslation(currentLanguage, 'subtitle')}
+              </p>
             </div>
-            {/* Subtítulo oculto en mobile */}
-            <p className="hidden md:block text-sm md:text-lg text-gray-600 font-semibold leading-normal mt-1 md:mt-0 md:ml-2">
-              {getTranslation(currentLanguage, 'subtitle')}
-            </p>
           </div>
 
-          {/* Selector de idioma */}
-          <div className="flex items-center justify-center md:justify-end mt-2 md:mt-0">
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-              <div className="flex bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg sm:rounded-xl p-1 sm:p-1.5 shadow-inner">
-                {languages.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => onLanguageChange(lang.code)}
-                    className={`px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg transition-all duration-300 transform hover:scale-105 ${
-                      currentLanguage === lang.code
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                        : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
-                    }`}
-                  >
-                    <span className="flex items-center space-x-1">
-                      <span className="text-sm sm:text-base">{lang.flag}</span>
-                      <span>{lang.label}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="flex items-center space-x-1 bg-gray-200 rounded-full p-1">
+              {languages.map(lang => (
+                <button
+                  key={lang.code}
+                  onClick={() => onLanguageChange(lang.code)}
+                  className={`px-4 py-1.5 text-base font-bold rounded-full transition-all duration-300 flex items-center space-x-2 ${
+                    currentLanguage === lang.code
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow'
+                      : 'text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  <span>{lang.flag}</span>
+                  <span>{lang.label}</span>
+                </button>
+              ))}
             </div>
+            <button
+              onClick={() => setIsAboutModalOpen(true)}
+              className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              <Info className="h-5 w-5" />
+              <span className="font-semibold text-base">About</span>
+            </button>
+            <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors">
+              <FileText className="h-5 w-5" />
+              <span className="font-semibold text-base">Portfolio</span>
+            </a>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)} 
+              className="text-gray-700 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {isMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+            </button>
           </div>
         </div>
-      </div>
-    </header>
+
+        {/* Mobile Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 bg-white rounded-lg shadow-xl p-4 space-y-4 animate-fade-in-down">
+            <div className="flex flex-col space-y-3">
+               <h3 className="font-bold text-gray-500 text-sm px-3">Language</h3>
+                <div className="flex items-center justify-around bg-gray-100 rounded-full p-1">
+                    {languages.map(lang => (
+                        <button
+                        key={lang.code}
+                        onClick={() => { onLanguageChange(lang.code); setIsMenuOpen(false); }}
+                        className={`w-full px-3 py-1.5 text-sm font-bold rounded-full transition-all duration-300 flex items-center justify-center space-x-2 ${
+                            currentLanguage === lang.code
+                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow'
+                            : 'text-gray-600'
+                        }`}
+                        >
+                        <span>{lang.flag}</span>
+                        <span>{lang.label}</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <button
+              onClick={() => { setIsAboutModalOpen(true); setIsMenuOpen(false); }}
+              className="w-full flex items-center space-x-3 text-gray-700 font-semibold p-3 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Info className="h-5 w-5 text-purple-600" />
+              <span>About this App</span>
+            </button>
+            <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="w-full flex items-center space-x-3 text-gray-700 font-semibold p-3 hover:bg-gray-100 rounded-lg transition-colors">
+              <FileText className="h-5 w-5 text-purple-600" />
+              <span>SonitaSV Portfolio</span>
+            </a>
+          </div>
+        )}
+      </header>
+
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onRequestClose={() => setIsAboutModalOpen(false)}
+        currentLanguage={currentLanguage}
+      />
+    </>
   );
 };
 
