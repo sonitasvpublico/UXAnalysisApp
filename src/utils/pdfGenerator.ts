@@ -59,6 +59,7 @@ const styles = {
   },
   spacing: {
     margin: 32, // margen amplio en todos los lados
+    marginTop: 50, // Margen superior específico
     section: 24, // entre secciones de color
     title_to_list: 14, // entre título y primer ítem
     between_items: 9, // entre ítems
@@ -105,33 +106,32 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     const pageWidth = pdf.internal.pageSize.getWidth();
     const margin = styles.spacing.margin;
     const contentWidth = pageWidth - (margin * 2);
-    let y = margin;
+    let y = styles.spacing.marginTop;
 
     const t = (key: string) => getTranslation(currentLanguage, key);
 
     const addWrappedText = (text: string, x: number, currentY: number, maxWidth: number, options: { fontSize?: number; fontStyle?: 'normal' | 'bold'; color?: string; align?: 'left' | 'center' | 'right' } = {}) => {
       const { fontSize = styles.fontSize.body, fontStyle = 'normal', color = styles.colors.text, align = 'left' } = options;
-      const lineHeight = 1.5; // Increased for better readability
+      const lineHeight = 1.4; // Consistent line height
 
       pdf.setFont('Poppins', fontStyle);
       pdf.setFontSize(fontSize);
       pdf.setTextColor(color);
       
       const lines = pdf.splitTextToSize(text, maxWidth);
-      const textHeight = lines.length * fontSize * lineHeight;
+      const textBlockHeight = lines.length * fontSize * lineHeight;
       
-      // Check for page break BEFORE drawing text
-      checkPageBreak(textHeight);
+      checkPageBreak(textBlockHeight);
 
       pdf.text(lines, x, currentY, { align, lineHeightFactor: lineHeight });
       
-      return currentY + (textHeight / lineHeight) + 4; // Return the new Y position
+      return currentY + textBlockHeight - (fontSize * (lineHeight - 1)); // Return the precise position for the next element
     };
 
     const checkPageBreak = (neededSpace: number) => {
       if (y + neededSpace > pdf.internal.pageSize.getHeight() - margin) {
         pdf.addPage();
-        y = margin;
+        y = styles.spacing.marginTop;
       }
     };
     
@@ -143,98 +143,55 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
       return currentY + 15;
     };
 
-    // --- Título principal (H1) ---
-    pdf.setFont('Poppins', 'bold');
-    pdf.setFontSize(styles.fontSize.h1);
-    pdf.setTextColor(styles.colors.primary);
-    pdf.text('✨ UI/UX Analysis Report', pageWidth / 2, y, { align: 'center' });
-    y += styles.fontSize.h1 + 12;
+    // --- PAGE 1: Project Details & Screenshot ---
+    const section1StartY = y;
+    let textY = section1StartY;
+    let imageY = section1StartY;
 
-    // Fecha
-    pdf.setFont('Poppins', 'normal');
-    pdf.setFontSize(styles.fontSize.small);
-    pdf.setTextColor(styles.colors.textLight);
-    pdf.text(new Date().toLocaleDateString(currentLanguage), pageWidth / 2, y, { align: 'center' });
-    y += styles.fontSize.small + 8;
-    pdf.setDrawColor(styles.colors.border);
-    pdf.setLineWidth(0.2);
-    pdf.line(margin, y, pageWidth - margin, y);
-    y += 12;
-
-    // --- Two-Column Layout for Project Info & Screenshot ---
+    // --- Left Column (Project Details)
+    const leftColumnX = margin;
     const leftColumnWidth = contentWidth * 0.55;
-    const rightColumnWidth = contentWidth * 0.40;
-    const gutter = contentWidth * 0.05;
-    const rightColumnX = margin + leftColumnWidth + gutter;
     
-    const infoStartY = y;
-    let textY = y;
-
-    // H2: Project Details
-    pdf.setFont('Poppins', 'bold');
-    pdf.setFontSize(styles.fontSize.h2);
-    pdf.setTextColor(styles.colors.text);
-    pdf.text('Project Details', margin, textY);
-    textY += styles.fontSize.h2 + 6;
+    textY = addWrappedText('Project Details', leftColumnX, textY, leftColumnWidth, { fontStyle: 'bold', fontSize: styles.fontSize.h2, color: styles.colors.text }); // Black title
+    textY += 15;
 
     const addDetail = (label: string, value: string, currentY: number) => {
+        const labelWidth = pdf.getStringUnitWidth(label + ':') * styles.fontSize.body + 5;
+        
         pdf.setFont('Poppins', 'bold');
         pdf.setFontSize(styles.fontSize.body);
-        pdf.text(`${label}:`, margin, currentY);
+        pdf.text(`${label}:`, leftColumnX, currentY);
 
         pdf.setFont('Poppins', 'normal');
-        pdf.text(value, margin + 70, currentY);
-        return currentY + styles.fontSize.body * styles.spacing.lineHeight + styles.spacing.between_items;
+        const valueY = addWrappedText(value, leftColumnX + labelWidth, currentY, leftColumnWidth - labelWidth, { fontStyle: 'normal' });
+        return Math.max(currentY + styles.fontSize.body + 12, valueY + 12); // Increased spacing
     };
     
     textY = addDetail('Screenshot', imageName, textY);
     textY = addDetail('Target', targetCountry, textY);
     textY = addDetail('Issues Found', String(results.length), textY);
     
-    let imageThumbY = infoStartY;
+    // --- Right Column (Screenshot)
+    let imgHeight = 0;
     if (imageUrl && imageDimensions) {
+        const rightColumnX = margin + leftColumnWidth + (contentWidth * 0.05);
+        const rightColumnWidth = contentWidth * 0.40;
         const aspectRatio = imageDimensions.width / imageDimensions.height;
-        const imgWidth = rightColumnWidth;
-        const imgHeight = imgWidth / aspectRatio;
+        imgHeight = rightColumnWidth / aspectRatio;
         
-        checkPageBreak(imgHeight + 10);
-        
-        // Draw a subtle border around the image
-        pdf.setDrawColor(styles.colors.border);
-        pdf.setLineWidth(1);
-        pdf.rect(rightColumnX, imageThumbY, imgWidth, imgHeight);
-        pdf.addImage(imageUrl, 'PNG', rightColumnX, imageThumbY, imgWidth, imgHeight);
-        imageThumbY += imgHeight + 10; 
+        checkPageBreak(imgHeight);
+        pdf.addImage(imageUrl, 'PNG', rightColumnX, imageY, rightColumnWidth, imgHeight);
     }
 
-    y = Math.max(textY, imageThumbY);
-    y = addDecorativeLine(y);
-    y += 10;
+    y = Math.max(textY, imageY + imgHeight) + styles.spacing.section;
 
-    // --- Full Screenshot Display ---
-    if (imageUrl && imageDimensions) {
-        const aspectRatio = imageDimensions.width / imageDimensions.height;
-        const imgWidth = contentWidth;
-        const imgHeight = imgWidth / aspectRatio;
-        
-        checkPageBreak(imgHeight + 20);
-        
-        pdf.setDrawColor(styles.colors.border);
-        pdf.setLineWidth(1);
-        pdf.rect(margin, y, imgWidth, imgHeight);
-        pdf.addImage(imageUrl, 'PNG', margin, y, imgWidth, imgHeight);
-        y += imgHeight + 20;
-    }
+    // --- PAGE 2: Analysis Results ---
+    pdf.addPage();
+    y = styles.spacing.marginTop; // Reset Y for new page
 
-    // --- Analysis Results (por prioridad) ---
     if (results.length > 0) {
-      y = addDecorativeLine(y);
-      checkPageBreak(styles.fontSize.h2);
-      pdf.setFont('Poppins', 'bold');
-      pdf.setFontSize(styles.fontSize.h2);
-      pdf.setTextColor(styles.colors.primary);
-      pdf.text(t('suggestions'), margin, y);
-      y += styles.fontSize.h2 + styles.spacing.title_to_list;
+      y = addWrappedText(t('suggestions'), margin, y, contentWidth, { fontStyle: 'bold', fontSize: styles.fontSize.h2, color: styles.colors.text }); // Black title
+      y += styles.spacing.title_to_list;
 
       const severityOrder = ['critical', 'high', 'medium', 'low'] as const;
       for (const severity of severityOrder) {
@@ -242,57 +199,51 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
         if (issuesOfSeverity.length > 0) {
           checkPageBreak(styles.fontSize.h2 * 2);
           
-          pdf.setFont('Poppins', 'bold');
-          pdf.setFontSize(styles.fontSize.h2);
-          pdf.setTextColor(styles.colors[severity]);
-          pdf.text(
-            `${severityEmojis[severity]} ${severity.charAt(0).toUpperCase() + severity.slice(1)} (${issuesOfSeverity.length})`,
-            margin, y
-          );
-          y += styles.fontSize.h2 * 1.5;
+          const severityTitle = `${severityEmojis[severity]} ${severity.charAt(0).toUpperCase() + severity.slice(1)} (${issuesOfSeverity.length})`;
+          y = addWrappedText(severityTitle, margin, y, contentWidth, { fontStyle: 'bold', fontSize: styles.fontSize.h2, color: styles.colors[severity] });
+          y += 12;
 
-          issuesOfSeverity.forEach((issue, index) => {
-            const issueNumber = `${index + 1}. `;
-            const categoryEmoji = categoryEmojis[issue.category] || '📋';
-            const titleText = `${issueNumber}${categoryEmoji} ${issue.title}`;
+          for (const issue of issuesOfSeverity) {
+            checkPageBreak(90); // Estimate space for an issue
             
-            checkPageBreak(60); // Estimate space for an issue
-            
-            y = addWrappedText(
-              titleText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent * 2,
-              { fontStyle: 'bold', fontSize: styles.fontSize.item, color: styles.colors.text }
-            );
+            const titleText = `${categoryEmojis[issue.category]} ${issue.title}`;
+            y = addWrappedText(titleText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { fontSize: styles.fontSize.item, fontStyle: 'bold' });
+            y += 6;
 
-            y = addWrappedText(`Description: ${issue.description}`, margin + styles.spacing.indent * 2, y, contentWidth - styles.spacing.indent * 2, { color: styles.colors.textLight });
-            y = addWrappedText(`Suggestion: ${issue.suggestion}`, margin + styles.spacing.indent * 2, y, contentWidth - styles.spacing.indent * 2);
-            y += styles.spacing.between_items;
-          });
+            y = addWrappedText(`Description: ${issue.description}`, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { color: styles.colors.textLight });
+            y += 6;
+            
+            y = addWrappedText(`Suggestion: ${issue.suggestion}`, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent);
+            y += 8;
+
+            if (issue.impact) {
+                const impactText = `Impact: ${issue.impact}`;
+                y = addWrappedText(impactText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent);
+            }
+            y += styles.spacing.section; // More space between issues
+          }
         }
       }
     }
 
-    // --- Localization Recommendations ---
+    // --- PAGE 3: Localization Advice ---
     if (localizationAdvice.length > 0) {
-      y = addDecorativeLine(y);
-      checkPageBreak(styles.fontSize.h2);
-      pdf.setFont('Poppins', 'bold');
-      pdf.setFontSize(styles.fontSize.h2);
-      pdf.setTextColor(styles.colors.primary);
-      pdf.text(`🌍 ${t('localization')}`, margin, y);
-      y += styles.fontSize.h2 + styles.spacing.title_to_list;
+        pdf.addPage();
+        y = styles.spacing.marginTop; // Reset Y for new page
 
-      localizationAdvice.forEach((advice, index) => {
-        checkPageBreak(50);
-        
-        y = addWrappedText(
-          `${index + 1}. ${advice.title}`,
-          margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent * 2,
-          { fontStyle: 'bold', fontSize: styles.fontSize.item }
-        );
+        y = addWrappedText(t('localization'), margin, y, contentWidth, { fontSize: styles.fontSize.h2, fontStyle: 'bold', color: styles.colors.text }); // Black title
+        y += styles.spacing.title_to_list;
 
-        y = addWrappedText(advice.advice, margin + styles.spacing.indent * 2, y, contentWidth - styles.spacing.indent * 2, { color: styles.colors.textLight });
-        y += styles.spacing.between_items;
-      });
+        for (const advice of localizationAdvice) {
+            checkPageBreak(60);
+            const titleText = `${categoryEmojis[advice.category as keyof typeof categoryEmojis] || '📋'} ${advice.title}`;
+            y = addWrappedText(titleText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { fontSize: styles.fontSize.item, fontStyle: 'bold' });
+            y += 6;
+            
+            y = addWrappedText(`Advice: ${advice.advice}`, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { color: styles.colors.textLight });
+
+            y += styles.spacing.section; // More space between advice items
+        }
     }
 
     // Pie de página

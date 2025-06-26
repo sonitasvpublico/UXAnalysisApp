@@ -1,5 +1,6 @@
 import type { AnalysisResult, LocalizationAdvice, Language } from '../types';
 import { localizationRules } from './localizationRules';
+import { getTranslation } from './translations';
 
 export const getLocalizedAnalysisResults = (language: Language): AnalysisResult[] => {
   const results = {
@@ -202,8 +203,8 @@ const getDynamicLocalizationAdvice = (language: Language, countryCode: string): 
   if (rules.dateFormat) {
     advice.push({
       id: 'date',
-      title: 'Date Formatting',
-      description: 'Ensure dates follow the local standard to avoid confusion.',
+      title: language === 'es' ? 'Formatos y Estándares' : language === 'fi' ? 'Formaatit ja Standardit' : 'Formatting & Standards',
+      description: language === 'es' ? 'Asegúrate de que las fechas sigan el formato local para evitar confusiones.' : language === 'fi' ? 'Varmista, että päivämäärät noudattavat paikallista standardia.' : 'Ensure dates follow the local standard to avoid confusion.',
       advice: rules.dateFormat[language] || rules.dateFormat.en,
       category: 'format'
     });
@@ -211,8 +212,8 @@ const getDynamicLocalizationAdvice = (language: Language, countryCode: string): 
   if (rules.currency) {
     advice.push({
       id: 'currency',
-      title: 'Currency Formatting',
-      description: 'Display prices and monetary values in the local currency and format.',
+      title: language === 'es' ? 'Formatos y Estándares' : language === 'fi' ? 'Formaatit ja Standardit' : 'Formatting & Standards',
+      description: language === 'es' ? 'Muestra precios y valores monetarios en la moneda y formato local.' : language === 'fi' ? 'Näytä hinnat ja rahamäärät paikallisessa valuutassa ja muodossa.' : 'Display prices and monetary values in the local currency and format.',
       advice: rules.currency[language] || rules.currency.en,
       category: 'format'
     });
@@ -220,8 +221,8 @@ const getDynamicLocalizationAdvice = (language: Language, countryCode: string): 
   if (rules.formality) {
     advice.push({
       id: 'formality',
-      title: 'Tone of Voice',
-      description: 'Adjust the communication style to match local cultural norms of formality.',
+      title: language === 'es' ? 'Tono y Formalidad' : language === 'fi' ? 'Sävy ja Muodollisuus' : 'Tone & Formality',
+      description: language === 'es' ? 'Ajusta el estilo de comunicación según las normas culturales locales de formalidad.' : language === 'fi' ? 'Säädä viestintätyyliä paikallisten muodollisuusnormien mukaan.' : 'Adjust the communication style to match local cultural norms of formality.',
       advice: rules.formality[language] || rules.formality.en,
       category: 'tone'
     });
@@ -320,11 +321,24 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
  * @param aiResults { labelAnnotations, localizedObjectAnnotations, textAnnotations }
  * @param imageWidth ancho de la imagen (opcional)
  * @param imageHeight alto de la imagen (opcional)
+ * @param language idioma actual
  * @returns AnalysisResult[]
  */
-export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: number, imageHeight?: number): AnalysisResult[] {
+export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: number, imageHeight?: number, language: Language = 'en'): AnalysisResult[] {
   const results: AnalysisResult[] = [];
   let idCounter = 1;
+  const t = (key: string, vars: Record<string, any> = {}) => {
+    let str = getTranslation(language, key);
+    if (!str || str === key) {
+      // Fallback a inglés si no existe en el idioma actual
+      str = getTranslation('en', key);
+    }
+    if (!str || str === key) return '';
+    Object.entries(vars).forEach(([k, v]) => {
+      str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+    });
+    return str;
+  };
 
   // 0. Baja resolución
   if (imageWidth && imageHeight && (imageWidth < 400 || imageHeight < 400)) {
@@ -332,21 +346,20 @@ export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: numbe
       id: `ai-${idCounter++}`,
       category: 'design',
       severity: 'high',
-      title: 'Low Image Resolution',
-      description: `The image resolution is low (${imageWidth}x${imageHeight}px). This can affect clarity and perceived quality.`,
-      suggestion: 'Use images of at least 800x600px for better analysis and presentation.',
-      impact: 'Low-res images may appear blurry or pixelated, reducing professionalism and accessibility.'
+      title: t('aiAnalysis.lowResTitle'),
+      description: t('aiAnalysis.lowResDesc', { width: imageWidth, height: imageHeight }),
+      suggestion: t('aiAnalysis.lowResSuggestion'),
+      impact: t('aiAnalysis.lowResImpact')
     });
   }
 
   // 1. Si hay texto detectado, issue de accesibilidad (más específico)
   if (aiResults.textAnnotations && aiResults.textAnnotations.length > 0) {
-    // El primer textAnnotation es el texto completo, los siguientes son palabras/frases
     const mainText = aiResults.textAnnotations[0]?.description?.trim();
     const topWords = aiResults.textAnnotations.slice(1, 4).map((t: any) => t.description).filter(Boolean);
-    // Bounding box del primer texto (si existe)
     const vertices = aiResults.textAnnotations[1]?.boundingPoly?.vertices;
     let box = undefined;
+    let boxStr = '';
     if (vertices && vertices.length >= 4) {
       const xs = vertices.map((v: any) => v.x || 0);
       const ys = vertices.map((v: any) => v.y || 0);
@@ -355,15 +368,17 @@ export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: numbe
       const width = Math.max(...xs) - x;
       const height = Math.max(...ys) - y;
       box = { x, y, width, height };
+      boxStr = t('aiAnalysis.textBox', { width, height });
     }
+    const keyWordsStr = topWords.length ? t('aiAnalysis.textKeyWords', { words: topWords.join(', ') }) : '';
     results.push({
       id: `ai-${idCounter++}`,
       category: 'accessibility',
       severity: 'high',
-      title: 'Text Detected in Image',
-      description: `Detected text: "${mainText?.replace(/\n/g, ' ')}"${topWords.length ? `\nKey words: ${topWords.join(', ')}` : ''}${box ? `\nText area: ${box.width}x${box.height}px` : ''}. Ensure sufficient color contrast and readability.`,
-      suggestion: 'Check that all text in the image has enough contrast with the background and is legible for all users.',
-      impact: 'Low contrast or unreadable text can make your design inaccessible to users with visual impairments.',
+      title: t('aiAnalysis.textTitle'),
+      description: t('aiAnalysis.textDesc', { mainText: mainText?.replace(/\n/g, ' '), keyWords: keyWordsStr, box: boxStr }),
+      suggestion: t('aiAnalysis.textSuggestion'),
+      impact: t('aiAnalysis.textImpact'),
       ...(box ? { coordinates: box } : {})
     });
   }
@@ -374,10 +389,10 @@ export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: numbe
       id: `ai-${idCounter++}`,
       category: 'usability',
       severity: 'medium',
-      title: 'Person Detected',
-      description: 'A person was detected in the image. Consider privacy implications if this is a personal photo.',
-      suggestion: 'Avoid sharing personal photos in public design analysis tools unless necessary.',
-      impact: 'Personal information may be exposed if people are visible in the image.',
+      title: t('aiAnalysis.personTitle'),
+      description: t('aiAnalysis.personDesc'),
+      suggestion: t('aiAnalysis.personSuggestion'),
+      impact: t('aiAnalysis.personImpact'),
     });
   }
 
@@ -394,10 +409,10 @@ export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: numbe
           id: `ai-${idCounter++}`,
           category: 'usability',
           severity: 'low',
-          title: `Multiple "${name}" Objects Detected`,
-          description: `The image contains ${count} objects of type "${name}".`,
-          suggestion: `Ensure that repeated objects are intentional and do not clutter the design.`,
-          impact: 'Too many similar objects can reduce clarity and usability.',
+          title: t('aiAnalysis.multiObjTitle', { name }),
+          description: t('aiAnalysis.multiObjDesc', { name, count }),
+          suggestion: t('aiAnalysis.multiObjSuggestion'),
+          impact: t('aiAnalysis.multiObjImpact'),
         });
       }
     });
@@ -410,10 +425,10 @@ export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: numbe
       id: `ai-${idCounter++}`,
       category: 'design',
       severity: 'medium',
-      title: 'High Visual Complexity',
-      description: `Many different elements were detected in the image: ${labelNames}. This may indicate visual clutter.`,
-      suggestion: 'Consider simplifying the design to improve focus and user experience.',
-      impact: 'Overly complex visuals can overwhelm users and reduce usability.',
+      title: t('aiAnalysis.visualComplexityTitle'),
+      description: t('aiAnalysis.visualComplexityDesc', { labels: labelNames }),
+      suggestion: t('aiAnalysis.visualComplexitySuggestion'),
+      impact: t('aiAnalysis.visualComplexityImpact'),
     });
   }
 

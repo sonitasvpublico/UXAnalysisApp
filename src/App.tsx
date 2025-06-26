@@ -70,7 +70,7 @@ function App() {
       if (aiResultsFromUpload && Object.keys(aiResultsFromUpload).length > 0 && aiResultsFromUpload.responses && aiResultsFromUpload.responses.length > 0) {
         console.log("Generando resultados desde la IA...", aiResultsFromUpload);
         const visionData = aiResultsFromUpload.responses[0];
-        finalAnalysis = generateAnalysisResultsFromAI(visionData, imgDims?.width, imgDims?.height);
+        finalAnalysis = generateAnalysisResultsFromAI(visionData, imgDims?.width, imgDims?.height, currentLanguage as Language);
         
         // Si la IA no produjo ningún resultado procesable, usar fallback para no mostrar una pantalla vacía.
         if (finalAnalysis.length === 0) {
@@ -132,6 +132,25 @@ function App() {
     setActiveTab('results');
     setImageDimensions(null);
   };
+
+  useEffect(() => {
+    // Solo regenerar si ya hay resultados de IA y una imagen cargada
+    if (appState === 'results' && aiResults && imageDimensions) {
+      let finalAnalysis: AnalysisResult[] = [];
+      if (aiResults && Object.keys(aiResults).length > 0 && aiResults.responses && aiResults.responses.length > 0) {
+        const visionData = aiResults.responses[0];
+        finalAnalysis = generateAnalysisResultsFromAI(visionData, imageDimensions.width, imageDimensions.height, currentLanguage as Language);
+        if (finalAnalysis.length === 0) {
+          finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
+        }
+      } else {
+        finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
+      }
+      setAnalysisResults(finalAnalysis);
+      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry);
+      setLocalizationAdvice(localizationData);
+    }
+  }, [currentLanguage]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 relative overflow-hidden">

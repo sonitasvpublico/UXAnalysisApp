@@ -138,7 +138,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, currentLanguage, 
               <Sparkles className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
             </div>
           </div>
-          <h2 className="font-poppins text-3xl sm:text-5xl font-black bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 bg-clip-text text-transparent mb-4 sm:mb-6">
+          <h2 className="font-poppins text-3xl sm:text-5xl font-black bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 bg-clip-text text-transparent mb-4 sm:mb-6 pb-2 leading-tight">
             {getTranslation(currentLanguage, 'uploadTitle')}
           </h2>
           <p className="text-base sm:text-xl text-gray-700 font-medium max-w-2xl mx-auto leading-relaxed px-4 sm:px-0">
