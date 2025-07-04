@@ -1,10 +1,10 @@
 /**
- * LucidaAI - AI-Powered Visual Analysis Tool
+ * Lucida AI - AI-Powered Visual Analysis Tool
  * Copyright (c) 2025 Sonia Zavaleta Toukkari
  * 
  * This software is provided for educational, personal, and non-commercial use only.
  * Commercial use requires explicit written permission from the copyright holder.
- * Attribution required: "Sonia Zavaleta Toukkari - LucidaAI"
+ * Attribution required: "Sonia Zavaleta Toukkari - Lucida AI"
  */
 
 import React, { useState, useEffect, useRef } from 'react';
