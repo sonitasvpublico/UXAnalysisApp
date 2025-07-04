@@ -1,6 +1,6 @@
-# UI/UX Analysis Tool
+# LucidaAI
 
-A professional web application that analyzes UI designs and screenshots to identify usability issues, accessibility problems, and provides localization recommendations for global markets.
+A professional web application that analyzes images and designs to identify usability issues, accessibility problems, and provides localization recommendations for global markets.
 
 ## ⚠️ Usage Terms & License
 
@@ -13,19 +13,19 @@ A professional web application that analyzes UI designs and screenshots to ident
 - ❌ **No profit-generating activities** using this software
 
 ### Attribution Requirement
-- ✅ **Must include attribution**: "Sonia Zavaleta Toukkari - UXAnalysisApp"
+- ✅ **Must include attribution**: "Sonia Zavaleta Toukkari - LucidaAI"
 - ✅ **Must preserve copyright notices** in all copies
 
 ### For Commercial Use
 If you want to use this software commercially, please contact:
 - **Author**: Sonia Zavaleta Toukkari
-- **Repository**: https://github.com/sonitasvpublico/UXAnalysisApp
+- **Repository**: https://github.com/sonitasvpublico/LucidaAI
 
 **License**: MIT License with Commercial Use Restrictions - see [LICENSE](LICENSE) file for full terms.
 
 ## Features
 
-- **AI-Powered Analysis**: Upload screenshots or UI designs to get comprehensive analysis
+- **AI-Powered Analysis**: Upload screenshots or images to get comprehensive analysis
 - **Multi-Category Issues**: Detects accessibility, usability, design, and localization issues
 - **Severity Levels**: Prioritizes issues from critical to low impact
 - **Visual Overlays**: Highlights problematic areas directly on your designs

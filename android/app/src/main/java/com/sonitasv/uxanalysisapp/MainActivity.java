@@ -1,4 +1,4 @@
-package com.sonitasvpublico.uxanalysisapp;
+package com.sonitasv.uxanalysisapp;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,14 +1,14 @@
 {
-  "name": "ui-ux-analysis-tool",
+  "name": "lucidaai",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Professional UI/UX analysis tool with AI-powered design evaluation and localization recommendations",
+  "description": "AI-powered visual analysis tool for images and designs.",
   "author": "Sonia Zavaleta Toukkari",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sonitasvpublico/UXAnalysisApp.git"
+    "url": "https://github.com/sonitasvpublico/LucidaAI.git"
   },
   "keywords": [
     "ux",

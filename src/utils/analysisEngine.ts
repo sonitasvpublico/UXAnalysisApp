@@ -241,10 +241,58 @@ const getDynamicLocalizationAdvice = (language: Language, countryCode: string): 
   return advice;
 };
 
+const analyzeTextForLocalizationIssues = (
+  text: string,
+  countryCode: string,
+  language: Language
+): LocalizationAdvice[] => {
+  const issues: LocalizationAdvice[] = [];
+  const countryRules = localizationRules[countryCode]?.rules;
+
+  if (!countryRules || !text) {
+    return issues;
+  }
+
+  const t = (key: string, vars: Record<string, any> = {}) => {
+    let str = getTranslation(language, `aiAnalysis.localization.${key}`);
+     if (!str || str.startsWith('aiAnalysis.')) str = getTranslation('en', `aiAnalysis.localization.${key}`);
+    Object.entries(vars).forEach(([k, v]) => {
+      str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), v);
+    });
+    return str;
+  };
+
+  // 1. Verificación de Moneda
+  if (text.includes('$') && countryRules.currency && !countryRules.currency.en.includes('$')) {
+    issues.push({
+      id: 'dynamic-currency',
+      category: 'format',
+      title: t('currencyTitle'),
+      description: t('currencyDesc', { symbol: '$' }),
+      advice: countryRules.currency[language] || countryRules.currency.en,
+    });
+  }
+
+  // 2. Verificación de formato de fecha (MM/DD/YYYY)
+  const usDateRegex = /\b(0?[1-9]|1[0-2])\/(0?[1-9]|[12][0-9]|3[01])\/\d{2,4}\b/;
+  if (usDateRegex.test(text) && countryRules.dateFormat && !countryRules.dateFormat.en.includes('MM/DD/YYYY')) {
+    issues.push({
+      id: 'dynamic-date',
+      category: 'format',
+      title: t('dateTitle'),
+      description: t('dateDesc', { format: 'MM/DD/YYYY' }),
+      advice: countryRules.dateFormat[language] || countryRules.dateFormat.en,
+    });
+  }
+
+  return issues;
+};
+
 // La función principal que se llama desde App.tsx
 export const analyzeImage = async (
   language: Language,
-  targetCountry: string
+  targetCountry: string,
+  aiResults?: any
 ): Promise<{
   analysis: AnalysisResult[];
   localization: LocalizationAdvice[];
@@ -253,20 +301,41 @@ export const analyzeImage = async (
   await new Promise(resolve => setTimeout(resolve, 500)); 
 
   const analysisResults = getLocalizedAnalysisResults(language);
-  const localizationAdvice = getDynamicLocalizationAdvice(language, targetCountry);
+  const generalAdvice = getDynamicLocalizationAdvice(language, targetCountry);
+  
+  const fullText = aiResults?.responses?.[0]?.textAnnotations?.[0]?.description || '';
+  const intelligentAdvice = analyzeTextForLocalizationIssues(fullText, targetCountry, language);
+
+  // Combinar y eliminar duplicados (si un consejo general ya cubre uno inteligente)
+  const combinedAdvice = [...intelligentAdvice, ...generalAdvice];
+  const uniqueAdvice = combinedAdvice.filter((advice, index, self) =>
+    index === self.findIndex((a) => a.id === advice.id)
+  );
 
   return {
     analysis: analysisResults,
-    localization: localizationAdvice,
+    localization: uniqueAdvice,
   };
 };
 
 // Nueva función específica para obtener solo consejos de localización
 export const getLocalizationAdviceOnly = (
   language: Language,
-  targetCountry: string
+  targetCountry: string,
+  aiResults?: any
 ): LocalizationAdvice[] => {
-  return getDynamicLocalizationAdvice(language, targetCountry);
+  const generalAdvice = getDynamicLocalizationAdvice(language, targetCountry);
+  
+  const fullText = aiResults?.responses?.[0]?.textAnnotations?.[0]?.description || '';
+  const intelligentAdvice = analyzeTextForLocalizationIssues(fullText, targetCountry, language);
+
+  // Combinar y eliminar duplicados (si un consejo general ya cubre uno inteligente)
+  const combinedAdvice = [...intelligentAdvice, ...generalAdvice];
+  const uniqueAdvice = combinedAdvice.filter((advice, index, self) =>
+    index === self.findIndex((a) => a.id === advice.id)
+  );
+
+  return uniqueAdvice;
 };
 
 export async function analyzeImageWithVisionAPI(base64Image: string): Promise<any> {
@@ -286,8 +355,8 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        requests: [
-          {
+    requests: [
+      {
             image: {
               content: base64Image,
             },
@@ -414,7 +483,7 @@ export function generateAnalysisResultsFromAI(aiResults: any, imageWidth?: numbe
           suggestion: t('aiAnalysis.multiObjSuggestion'),
           impact: t('aiAnalysis.multiObjImpact'),
         });
-      }
+  }
     });
   }
 

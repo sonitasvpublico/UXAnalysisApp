@@ -32,8 +32,8 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
               <div className="flex items-center space-x-1.5">
                 <Sparkles className="h-4 w-4 text-purple-500" />
                 <h1 className="font-poppins text-xl font-bold bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 bg-clip-text text-transparent">
-                  {getTranslation(currentLanguage, 'title')}
-                </h1>
+                {getTranslation(currentLanguage, 'title')}
+              </h1>
               </div>
               <p className="hidden md:block text-sm text-gray-500 font-semibold -mt-1">
                 {getTranslation(currentLanguage, 'subtitle')}
@@ -46,9 +46,9 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center space-x-1 bg-gray-200 rounded-full p-1">
               {languages.map(lang => (
-                <button
-                  key={lang.code}
-                  onClick={() => onLanguageChange(lang.code)}
+                  <button
+                    key={lang.code}
+                    onClick={() => onLanguageChange(lang.code)}
                   className={`px-4 py-1.5 text-base font-bold rounded-full transition-all duration-300 flex items-center space-x-2 ${
                     currentLanguage === lang.code
                       ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow'
@@ -95,16 +95,16 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
                         key={lang.code}
                         onClick={() => { onLanguageChange(lang.code); setIsMenuOpen(false); }}
                         className={`w-full px-3 py-1.5 text-sm font-bold rounded-full transition-all duration-300 flex items-center justify-center space-x-2 ${
-                            currentLanguage === lang.code
+                      currentLanguage === lang.code
                             ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow'
                             : 'text-gray-600'
-                        }`}
-                        >
-                        <span>{lang.flag}</span>
-                        <span>{lang.label}</span>
-                        </button>
-                    ))}
-                </div>
+                    }`}
+                  >
+                      <span>{lang.flag}</span>
+                      <span>{lang.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
             <button
               onClick={() => { setIsAboutModalOpen(true); setIsMenuOpen(false); }}
@@ -119,7 +119,7 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
             </a>
           </div>
         )}
-      </header>
+    </header>
 
       <AboutModal
         isOpen={isAboutModalOpen}

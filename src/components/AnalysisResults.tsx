@@ -161,21 +161,21 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   {currentLanguage === 'fi' && 'Kategoria'}
                 </label>
                 <div className="relative">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
                     className="appearance-none w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 font-medium transition-all duration-300 text-sm sm:text-base"
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category}>
                         {category === 'all' ? 
                           (currentLanguage === 'en' ? 'All Categories' : 
                           currentLanguage === 'es' ? 'Todas las Categorías' : 
                           'Kaikki Kategoriat') : 
                           getTranslation(currentLanguage, `categories.${category}`)}
-                      </option>
-                    ))}
-                  </select>
+                    </option>
+                  ))}
+                </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                     <ChevronDown className="h-5 w-5" />
                   </div>
@@ -188,21 +188,21 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
                   {currentLanguage === 'fi' && 'Vakavuus'}
                 </label>
                 <div className="relative">
-                  <select
-                    value={selectedSeverity}
-                    onChange={(e) => setSelectedSeverity(e.target.value)}
+                <select
+                  value={selectedSeverity}
+                  onChange={(e) => setSelectedSeverity(e.target.value)}
                     className="appearance-none w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 font-medium transition-all duration-300 text-sm sm:text-base"
-                  >
-                    {severities.map(severity => (
-                      <option key={severity} value={severity}>
+                >
+                  {severities.map(severity => (
+                    <option key={severity} value={severity}>
                         {severity === 'all' ? 
                           (currentLanguage === 'en' ? 'All Severities' : 
                           currentLanguage === 'es' ? 'Todas las Gravedades' : 
                           'Kaikki Vakavuudet') : 
                           getTranslation(currentLanguage, `severity.${severity}`)}
-                      </option>
-                    ))}
-                  </select>
+                    </option>
+                  ))}
+                </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
                     <ChevronDown className="h-5 w-5" />
                   </div>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">UXAnalysisApp</string>
-    <string name="title_activity_main">UXAnalysisApp</string>
-    <string name="package_name">com.sonitasvpublico.uxanalysisapp</string>
-    <string name="custom_url_scheme">com.sonitasvpublico.uxanalysisapp</string>
+    <string name="app_name">LucidaAI</string>
+    <string name="title_activity_main">LucidaAI</string>
+    <string name="package_name">com.sonitasv.uxanalysisapp</string>
+    <string name="custom_url_scheme">com.sonitasv.uxanalysisapp</string>
 </resources>

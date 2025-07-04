@@ -1,10 +1,10 @@
 /**
- * UXAnalysisApp - UI/UX Analysis Tool
+ * LucidaAI - AI-Powered Visual Analysis Tool
  * Copyright (c) 2025 Sonia Zavaleta Toukkari
  * 
  * This software is provided for educational, personal, and non-commercial use only.
  * Commercial use requires explicit written permission from the copyright holder.
- * Attribution required: "Sonia Zavaleta Toukkari - UXAnalysisApp"
+ * Attribution required: "Sonia Zavaleta Toukkari - LucidaAI"
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -87,7 +87,7 @@ function App() {
       setAnalysisResults(finalAnalysis);
 
       // La localización siempre se obtiene de forma independiente y dinámica.
-      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry);
+      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry, aiResults);
       setLocalizationAdvice(localizationData);
 
       setAppState('results');
@@ -95,7 +95,7 @@ function App() {
       console.error('Error during analysis processing:', error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
       // Importante: Volver a la pantalla de subida si hay un error crítico
-      setAppState('upload'); 
+      setAppState('upload');
     }
   };
 
@@ -147,7 +147,7 @@ function App() {
         finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
       }
       setAnalysisResults(finalAnalysis);
-      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry);
+      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry, aiResults);
       setLocalizationAdvice(localizationData);
     }
   }, [currentLanguage]);
@@ -265,15 +265,15 @@ function App() {
                   />
                 )}
                 <div className="mt-8">
-                  <AnalysisResults
-                    results={analysisResults}
-                    currentLanguage={currentLanguage}
-                    imageName={uploadedImage.name}
-                    imageUrl={uploadedImage.url}
-                    onExportReport={handleExportReport}
+              <AnalysisResults
+                results={analysisResults}
+                currentLanguage={currentLanguage}
+                imageName={uploadedImage.name}
+                imageUrl={uploadedImage.url}
+                onExportReport={handleExportReport}
                     targetCountry={targetCountry}
                     aiResults={aiResults}
-                  />
+              />
                 </div>
               </>
             )}
@@ -298,11 +298,11 @@ function App() {
                 <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
-                Professional UI/UX Analysis Tool
+                UX Analysis Tool
               </h3>
             </div>
             <p className="text-blue-100 text-sm sm:text-lg font-medium mb-1 sm:mb-2">
-              Powered by Advanced AI Technology
+              Powered by <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-blue-200 transition-colors">SonitaSV</a>
             </p>
             <p className="text-blue-200/80 text-xs sm:text-sm">
               Supporting accessibility, usability, and global localization standards

@@ -18,8 +18,8 @@ const getCategoryIcon = (category: 'format' | 'tone' | 'general') => {
       return <Globe className="h-6 w-6 text-green-500" />;
     default:
       return <AlertCircle className="h-6 w-6 text-gray-500" />;
-  }
-};
+    }
+  };
 
 const getCategoryTitle = (category: 'format' | 'tone' | 'general', lang: Language) => {
     const titles = {
