@@ -1,4 +1,4 @@
-# LucidaAI
+# Nítida
 
 A professional web application that analyzes images and designs to identify usability issues, accessibility problems, and provides localization recommendations for global markets.
 
@@ -13,13 +13,13 @@ A professional web application that analyzes images and designs to identify usab
 - ❌ **No profit-generating activities** using this software
 
 ### Attribution Requirement
-- ✅ **Must include attribution**: "Sonia Zavaleta Toukkari - LucidaAI"
+- ✅ **Must include attribution**: "Sonia Zavaleta Toukkari - Nítida"
 - ✅ **Must preserve copyright notices** in all copies
 
 ### For Commercial Use
 If you want to use this software commercially, please contact:
 - **Author**: Sonia Zavaleta Toukkari
-- **Repository**: https://github.com/sonitasvpublico/LucidaAI
+- **Repository**: https://github.com/sonitasvpublico/Nitida
 
 **License**: MIT License with Commercial Use Restrictions - see [LICENSE](LICENSE) file for full terms.
 

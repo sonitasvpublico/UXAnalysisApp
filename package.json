@@ -1,5 +1,5 @@
 {
-  "name": "lucidaai",
+  "name": "nitida",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sonitasvpublico/LucidaAI.git"
+    "url": "https://github.com/sonitasvpublico/Nitida.git"
   },
   "keywords": [
     "ux",

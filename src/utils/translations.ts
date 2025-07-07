@@ -69,7 +69,7 @@ export const translations = {
       }
     },
     aboutModal: {
-      title: "About This Tool",
+      title: "About Nítida",
       description: "This application leverages the power of Google's Vision AI to provide instant, automated analysis of UI/UX designs. Simply upload a screenshot of any interface to receive detailed feedback on accessibility, usability, and localization.",
       feature1Title: "AI-Powered Analysis",
       feature1Desc: "Detects elements, text, and objects in your image to identify potential design issues.",
@@ -78,7 +78,8 @@ export const translations = {
       feature3Title: "In-Depth Reports",
       feature3Desc: "Generates comprehensive reports with actionable suggestions to improve your design.",
       footer: {
-        prefix: "A project by ",
+        prefix: "About Nítida's creator",
+        creator: "About the creator",
         suffix: "."
       }
     }
@@ -151,7 +152,7 @@ export const translations = {
       }
     },
     aboutModal: {
-      title: "Acerca de esta Herramienta",
+      title: "Sobre Nítida",
       description: "Esta aplicación utiliza el poder de la IA de Visión de Google para proporcionar análisis automáticos e instantáneos de diseños UI/UX. Simplemente sube una captura de pantalla de cualquier interfaz para recibir feedback detallado sobre accesibilidad, usabilidad y localización.",
       feature1Title: "Análisis con IA",
       feature1Desc: "Detecta elementos, texto y objetos en tu imagen para identificar posibles problemas de diseño.",
@@ -160,7 +161,8 @@ export const translations = {
       feature3Title: "Informes Detallados",
       feature3Desc: "Genera informes completos con sugerencias prácticas para mejorar tu diseño.",
       footer: {
-        prefix: "Un proyecto de ",
+        prefix: "Sobre la creadora de Nítida",
+        creator: "Sobre la creadora",
         suffix: "."
       }
     }
@@ -233,7 +235,7 @@ export const translations = {
       }
     },
     aboutModal: {
-      title: "Tietoja Työkalusta",
+      title: "Tietoja Nítidasta",
       description: "Tämä sovellus hyödyntää Googlen Vision AI:n tehoa tarjotakseen välittömiä, automatisoituja analyysejä UI/UX-suunnitelmista. Lataa vain käyttöliittymän kuvakaappaus saadaksesi yksityiskohtaista palautetta saavutettavuudesta, käytettävyydestä ja lokalisoinnista.",
       feature1Title: "Tekoälypohjainen Analyysi",
       feature1Desc: "Tunnistaa elementtejä, tekstiä ja kohteita kuvastasi mahdollisten suunnitteluongelmien löytämiseksi.",
@@ -242,7 +244,8 @@ export const translations = {
       feature3Title: "Yksityiskohtaiset Raportit",
       feature3Desc: "Luo kattavia raportteja, joissa on käytännön ehdotuksia suunnittelusi parantamiseksi.",
       footer: {
-        prefix: "Projektin on tehnyt ",
+        prefix: "Tietoja Nítidan luojasta",
+        creator: "Tietoja luojasta",
         suffix: "."
       }
     }

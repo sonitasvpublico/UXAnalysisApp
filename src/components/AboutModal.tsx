@@ -11,7 +11,19 @@ interface AboutModalProps {
 }
 
 const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onRequestClose, currentLanguage }) => {
-  const t = (key: string) => getTranslation(currentLanguage, `aboutModal.${key}`);
+  const t = (key: string) => {
+    if (key === 'title') {
+      const titles = getTranslation(currentLanguage, `aboutModal.title`);
+      if (typeof titles === 'object') return titles[currentLanguage] || titles['en'];
+      return titles;
+    }
+    if (key === 'footer.prefix') {
+      const prefixes = getTranslation(currentLanguage, `aboutModal.footer.prefix`);
+      if (typeof prefixes === 'object') return prefixes[currentLanguage] || prefixes['en'];
+      return prefixes;
+    }
+    return getTranslation(currentLanguage, `aboutModal.${key}`);
+  };
 
   return (
     <Modal
@@ -22,7 +34,7 @@ const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onRequestClose, current
       className="fixed inset-0 flex items-center justify-center z-50 p-4"
       overlayClassName="fixed inset-0 bg-black bg-opacity-70 z-40"
     >
-      <div className="bg-gradient-to-br from-slate-900 via-gray-900 to-blue-900 text-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 sm:p-12 relative border border-blue-500/20">
+      <div className="bg-gradient-to-br from-slate-900 via-gray-900 to-blue-900 text-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 sm:p-12 relative border border-blue-500/20 max-h-[90vh] overflow-y-auto">
         <button
           onClick={onRequestClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-700/50 hover:bg-red-500/80 rounded-full p-2 transition-all duration-300 transform hover:scale-110"

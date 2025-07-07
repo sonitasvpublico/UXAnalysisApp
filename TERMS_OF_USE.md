@@ -1,7 +1,7 @@
-# Terms of Use - LucidaAI
+# Terms of Use - Nítida
 
 ## Copyright Notice
-**LucidaAI** - Copyright (c) 2025 Sonia Zavaleta Toukkari
+**Nítida** - Copyright (c) 2025 Sonia Zavaleta Toukkari
 
 ## 1. License and Usage Rights
 
@@ -26,7 +26,7 @@ This software is licensed under the MIT License with additional commercial use r
 
 **Any use of this software must include proper attribution:**
 
-- **Required Attribution**: "Sonia Zavaleta Toukkari - LucidaAI"
+- **Required Attribution**: "Sonia Zavaleta Toukkari - Nítida"
 - **Copyright Notice**: Must preserve all copyright notices
 - **License Notice**: Must include reference to MIT License
 
@@ -42,7 +42,7 @@ If you want to use this software commercially, you must:
 
 ### Contact Information:
 - **Author**: Sonia Zavaleta Toukkari
-- **Repository**: https://github.com/sonitasvpublico/LucidaAI
+- **Repository**: https://github.com/sonitasvpublico/Nitida
 - **Email**: [Your contact email]
 
 ## 4. Enforcement

@@ -69,7 +69,9 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
             </button>
             <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors">
               <FileText className="h-5 w-5" />
-              <span className="font-semibold text-base">Portfolio</span>
+              <span className="font-semibold text-base">{
+                getTranslation(currentLanguage, 'aboutModal.footer.creator')
+              }</span>
             </a>
           </div>
 
@@ -111,11 +113,11 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
               className="w-full flex items-center space-x-3 text-gray-700 font-semibold p-3 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Info className="h-5 w-5 text-purple-600" />
-              <span>About this App</span>
+              <span>{getTranslation(currentLanguage, 'aboutModal.title')}</span>
             </button>
             <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="w-full flex items-center space-x-3 text-gray-700 font-semibold p-3 hover:bg-gray-100 rounded-lg transition-colors">
               <FileText className="h-5 w-5 text-purple-600" />
-              <span>SonitaSV Portfolio</span>
+              <span>{getTranslation(currentLanguage, 'aboutModal.footer.creator')}</span>
             </a>
           </div>
         )}
