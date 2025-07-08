@@ -80,8 +80,19 @@ const categoryEmojis = {
 const severityEmojis = {
   critical: '🔴',
   high: '🟠',
-  medium: '🟡',
+  medium: '��',
   low: '🟢'
+};
+
+// Helper para chequear espacio antes de cada bloque
+const ensureSpace = (neededSpace: number, pdf: any, margin: number, y: number) => {
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const footerSpace = 32; // espacio de respiro antes del footer
+  if (y + neededSpace + footerSpace > pageHeight - margin) {
+    pdf.addPage();
+    return styles.spacing.marginTop;
+  }
+  return y;
 };
 
 export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> => {
@@ -93,12 +104,20 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     // --- Load Fonts into PDF ---
     const poppinsRegularBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-Regular.ttf');
     const poppinsBoldBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-Bold.ttf');
+    const poppinsItalicBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-Italic.ttf');
+    const poppinsExtraLightBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-ExtraLight.ttf');
 
     pdf.addFileToVFS('Poppins-Regular.ttf', poppinsRegularBase64);
     pdf.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
 
     pdf.addFileToVFS('Poppins-Bold.ttf', poppinsBoldBase64);
     pdf.addFont('Poppins-Bold.ttf', 'Poppins', 'bold');
+
+    pdf.addFileToVFS('Poppins-Italic.ttf', poppinsItalicBase64);
+    pdf.addFont('Poppins-Italic.ttf', 'Poppins', 'italic');
+
+    pdf.addFileToVFS('Poppins-ExtraLight.ttf', poppinsExtraLightBase64);
+    pdf.addFont('Poppins-ExtraLight.ttf', 'Poppins', 'extralight');
     // --- End Font Loading ---
 
     pdf.setFont('Poppins', 'normal');
@@ -110,162 +129,165 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
 
     const t = (key: string) => getTranslation(currentLanguage, key);
 
-    const addWrappedText = (text: string, x: number, currentY: number, maxWidth: number, options: { fontSize?: number; fontStyle?: 'normal' | 'bold'; color?: string; align?: 'left' | 'center' | 'right' } = {}) => {
-      const { fontSize = styles.fontSize.body, fontStyle = 'normal', color = styles.colors.text, align = 'left' } = options;
-      const lineHeight = 1.4; // Consistent line height
+    // --- HEADER: Logo + Fecha ---
+    const logoUrl = '/nitida-logo.png';
+    const logoImg = await fetch(logoUrl).then(r => r.blob()).then(blob => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === 'string') resolve(reader.result);
+          else reject('Error reading logo');
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    });
+    const logoWidth = 120;
+    const logoHeight = 34;
+    pdf.addImage(logoImg, 'PNG', margin, y, logoWidth, logoHeight, undefined, 'FAST');
+    // Fecha (en negro)
+    pdf.setFont('Poppins', 'normal');
+    pdf.setFontSize(styles.fontSize.small);
+    pdf.setTextColor(styles.colors.text); // negro
+    const fecha = new Date().toLocaleDateString();
+    pdf.text(fecha, pageWidth - margin, y + 18, { align: 'right' });
+    y += logoHeight + 32; // Más espacio debajo del header
 
-      pdf.setFont('Poppins', fontStyle);
-      pdf.setFontSize(fontSize);
-      pdf.setTextColor(color);
-      
-      const lines = pdf.splitTextToSize(text, maxWidth);
-      const textBlockHeight = lines.length * fontSize * lineHeight;
-      
-      checkPageBreak(textBlockHeight);
+    // --- RESUMEN DEL ANÁLISIS ---
+    pdf.setFont('Poppins', 'normal'); // font normal, no bold
+    pdf.setFontSize(styles.fontSize.h2);
+    pdf.setTextColor(styles.colors.text);
+    pdf.text('Resumen del análisis', margin, y);
+    y += 24;
+    pdf.setFont('Poppins', 'normal');
+    pdf.setFontSize(styles.fontSize.body);
+    pdf.setTextColor(styles.colors.text);
+    pdf.text(`Imagen: ${imageName}`, margin, y);
+    y += 18;
+    pdf.text(`País objetivo: ${targetCountry}`, margin, y);
+    y += 18;
+    pdf.text(`Issues encontrados: ${results.length}`, margin, y);
+    y += 28;
 
-      pdf.text(lines, x, currentY, { align, lineHeightFactor: lineHeight });
-      
-      return currentY + textBlockHeight - (fontSize * (lineHeight - 1)); // Return the precise position for the next element
-    };
-
-    const checkPageBreak = (neededSpace: number) => {
-      if (y + neededSpace > pdf.internal.pageSize.getHeight() - margin) {
-        pdf.addPage();
-        y = styles.spacing.marginTop;
-      }
-    };
-    
-    const addDecorativeLine = (currentY: number) => {
-      checkPageBreak(15);
-      pdf.setDrawColor(styles.colors.border);
-      pdf.setLineWidth(0.5);
-      pdf.line(margin, currentY, pageWidth - margin, currentY);
-      return currentY + 15;
-    };
-
-    // --- PAGE 1: Project Details & Screenshot ---
-    const section1StartY = y;
-    let textY = section1StartY;
-    let imageY = section1StartY;
-
-    // --- Left Column (Project Details)
-    const leftColumnX = margin;
-    const leftColumnWidth = contentWidth * 0.55;
-    
-    textY = addWrappedText('Project Details', leftColumnX, textY, leftColumnWidth, { fontStyle: 'bold', fontSize: styles.fontSize.h2, color: styles.colors.text }); // Black title
-    textY += 15;
-
-    const addDetail = (label: string, value: string, currentY: number) => {
-        const labelWidth = pdf.getStringUnitWidth(label + ':') * styles.fontSize.body + 5;
-        
-        pdf.setFont('Poppins', 'bold');
-        pdf.setFontSize(styles.fontSize.body);
-        pdf.text(`${label}:`, leftColumnX, currentY);
-
-        pdf.setFont('Poppins', 'normal');
-        const valueY = addWrappedText(value, leftColumnX + labelWidth, currentY, leftColumnWidth - labelWidth, { fontStyle: 'normal' });
-        return Math.max(currentY + styles.fontSize.body + 12, valueY + 12); // Increased spacing
-    };
-    
-    textY = addDetail('Screenshot', imageName, textY);
-    textY = addDetail('Target', targetCountry, textY);
-    textY = addDetail('Issues Found', String(results.length), textY);
-    
-    // --- Right Column (Screenshot)
-    let imgHeight = 0;
+    // --- IMAGEN ANALIZADA (centrada, tamaño controlado) ---
     if (imageUrl && imageDimensions) {
-        const rightColumnX = margin + leftColumnWidth + (contentWidth * 0.05);
-        const rightColumnWidth = contentWidth * 0.40;
-        const aspectRatio = imageDimensions.width / imageDimensions.height;
-        imgHeight = rightColumnWidth / aspectRatio;
-        
-        checkPageBreak(imgHeight);
-        pdf.addImage(imageUrl, 'PNG', rightColumnX, imageY, rightColumnWidth, imgHeight);
+      const maxImgWidth = 300;
+      const maxImgHeight = 180;
+      let imgW = imageDimensions.width;
+      let imgH = imageDimensions.height;
+      // Escalar proporcionalmente
+      const widthRatio = maxImgWidth / imgW;
+      const heightRatio = maxImgHeight / imgH;
+      const scale = Math.min(widthRatio, heightRatio, 1);
+      imgW = imgW * scale;
+      imgH = imgH * scale;
+      const imgX = margin + (contentWidth - imgW) / 2;
+      pdf.addImage(imageUrl, 'PNG', imgX, y, imgW, imgH, undefined, 'FAST');
+      y += imgH + 24;
     }
 
-    y = Math.max(textY, imageY + imgHeight) + styles.spacing.section;
-
-    // --- PAGE 2: Analysis Results ---
-    pdf.addPage();
-    y = styles.spacing.marginTop; // Reset Y for new page
-
+    // --- LISTA DE ISSUES ---
+    pdf.setFont('Poppins', 'normal'); // font normal, no bold
+    pdf.setFontSize(styles.fontSize.h2);
+    pdf.setTextColor(styles.colors.text);
+    pdf.text('Issues encontrados', margin, y);
+    y += 28; // más espacio después del título
     if (results.length > 0) {
-      y = addWrappedText(t('suggestions'), margin, y, contentWidth, { fontStyle: 'bold', fontSize: styles.fontSize.h2, color: styles.colors.text }); // Black title
-      y += styles.spacing.title_to_list;
-
       const severityOrder = ['critical', 'high', 'medium', 'low'] as const;
       for (const severity of severityOrder) {
         const issuesOfSeverity = results.filter(r => r.severity === severity);
         if (issuesOfSeverity.length > 0) {
-          checkPageBreak(styles.fontSize.h2 * 2);
-          
-          const severityTitle = `${severityEmojis[severity]} ${severity.charAt(0).toUpperCase() + severity.slice(1)} (${issuesOfSeverity.length})`;
-          y = addWrappedText(severityTitle, margin, y, contentWidth, { fontStyle: 'bold', fontSize: styles.fontSize.h2, color: styles.colors[severity] });
-          y += 12;
-
+          pdf.setFont('Poppins', 'normal'); // font normal para subtítulo
+          pdf.setFontSize(styles.fontSize.h3);
+          pdf.setTextColor(styles.colors[severity]);
+          pdf.text(`${severityEmojis[severity]} ${severity.charAt(0).toUpperCase() + severity.slice(1)}`, margin + 8, y);
+          y += 28; // más espacio después del título de severidad
           for (const issue of issuesOfSeverity) {
-            checkPageBreak(90); // Estimate space for an issue
-            
-            const titleText = `${categoryEmojis[issue.category]} ${issue.title}`;
-            y = addWrappedText(titleText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { fontSize: styles.fontSize.item, fontStyle: 'bold' });
-            y += 6;
-
-            y = addWrappedText(`Description: ${issue.description}`, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { color: styles.colors.textLight });
-            y += 6;
-            
-            y = addWrappedText(`Suggestion: ${issue.suggestion}`, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent);
-            y += 8;
-
-            if (issue.impact) {
-                const impactText = `Impact: ${issue.impact}`;
-                y = addWrappedText(impactText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent);
+            pdf.setFont('Poppins', 'normal');
+            pdf.setFontSize(styles.fontSize.body + 2); // subtítulo más grande
+            pdf.setTextColor(styles.colors.text);
+            let cleanTitle = issue.title.replace(/^\[.*?\]\s*/, '');
+            const issueTitleLines = pdf.splitTextToSize(`• ${categoryEmojis[issue.category]} ${cleanTitle}`, contentWidth - 40);
+            const descLines = pdf.splitTextToSize(issue.description, contentWidth - 56);
+            const descLineHeight = (styles.fontSize.body + 1) * 1.5;
+            // Definir suggLines y suggLineHeight siempre, aunque no haya sugerencia
+            const suggLines = issue.suggestion ? pdf.splitTextToSize(`Sugerencia: ${issue.suggestion}`, contentWidth - 56) : [];
+            const suggLineHeight = (styles.fontSize.body + 1) * 1.5;
+            const blockHeight =
+              issueTitleLines.length * (styles.fontSize.body + 2) + 8 +
+              descLines.length * descLineHeight + 8 +
+              (issue.suggestion ? (suggLines.length * suggLineHeight + 10 + 6) : 0) +
+              24;
+            y = ensureSpace(blockHeight, pdf, margin, y);
+            pdf.text(issueTitleLines, margin + 24, y);
+            y += issueTitleLines.length * (styles.fontSize.body + 2) + 8; // más espacio después del subtítulo
+            // Descripción (ajustar margen derecho y aumentar interlineado)
+            pdf.setFontSize(styles.fontSize.body + 1);
+            pdf.setTextColor(styles.colors.textLight);
+            descLines.forEach((line: string, idx: number) => {
+              pdf.text(line, margin + 32, y + idx * descLineHeight);
+            });
+            y += descLines.length * descLineHeight + 8;
+            if (issue.suggestion) {
+              y += 6; // más espacio antes de la sugerencia
+              // Usar Poppins ExtraLight en negro, cursiva si es posible
+              pdf.setFont('Poppins', 'italic'); // jsPDF no soporta extralightitalic, así que usamos italic
+              pdf.setTextColor(styles.colors.text); // negro
+              pdf.setFontSize(styles.fontSize.body + 1);
+              suggLines.forEach((line: string, idx: number) => {
+                pdf.text(line, margin + 32, y + idx * suggLineHeight);
+              });
+              y += suggLines.length * suggLineHeight + 10; // más espacio después de la sugerencia
             }
-            y += styles.spacing.section; // More space between issues
           }
+          y += 4; // menos espacio entre severidades
         }
       }
+    } else {
+      pdf.setFont('Poppins', 'normal');
+      pdf.setFontSize(styles.fontSize.body);
+      pdf.setTextColor(styles.colors.textLight);
+      pdf.text('No se encontraron issues.', margin + 8, y);
+      y += 18;
+    }
+    y += 18; // más espacio antes de la siguiente sección
+
+    // --- CONSEJOS DE LOCALIZACIÓN ---
+    if (localizationAdvice && localizationAdvice.length > 0) {
+      pdf.setFont('Poppins', 'normal'); // font normal, no bold
+      pdf.setFontSize(styles.fontSize.h2);
+      pdf.setTextColor(styles.colors.text);
+      pdf.text('Consejos de localización', margin, y);
+      y += 28;
+      pdf.setFont('Poppins', 'normal');
+      pdf.setFontSize(styles.fontSize.body + 1);
+      pdf.setTextColor(styles.colors.text);
+      for (const advice of localizationAdvice) {
+        const adviceLines = pdf.splitTextToSize(`• ${advice.advice}`, contentWidth - 40);
+        adviceLines.forEach((line: string, idx: number) => {
+          // Chequear espacio antes de cada línea
+          y = ensureSpace((styles.fontSize.body + 1) * 1.5, pdf, margin, y);
+          pdf.text(line, margin + 16, y);
+          y += (styles.fontSize.body + 1) * 1.5;
+        });
+        y += 8; // más espacio entre consejos
+      }
+      y += 10;
     }
 
-    // --- PAGE 3: Localization Advice ---
-    if (localizationAdvice.length > 0) {
-        pdf.addPage();
-        y = styles.spacing.marginTop; // Reset Y for new page
-
-        y = addWrappedText(t('localization'), margin, y, contentWidth, { fontSize: styles.fontSize.h2, fontStyle: 'bold', color: styles.colors.text }); // Black title
-        y += styles.spacing.title_to_list;
-
-        for (const advice of localizationAdvice) {
-            checkPageBreak(60);
-            const titleText = `${categoryEmojis[advice.category as keyof typeof categoryEmojis] || '📋'} ${advice.title}`;
-            y = addWrappedText(titleText, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { fontSize: styles.fontSize.item, fontStyle: 'bold' });
-            y += 6;
-            
-            y = addWrappedText(`Advice: ${advice.advice}`, margin + styles.spacing.indent, y, contentWidth - styles.spacing.indent, { color: styles.colors.textLight });
-
-            y += styles.spacing.section; // More space between advice items
-        }
-    }
-
-    // Pie de página
+    // --- FOOTER EN TODAS LAS PÁGINAS ---
     const pageCount = (pdf.internal as any).getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       pdf.setPage(i);
+      const footerY = pdf.internal.pageSize.getHeight() - margin + 18;
       pdf.setFont('Poppins', 'normal');
       pdf.setFontSize(styles.fontSize.small);
       pdf.setTextColor(styles.colors.textLight);
-      pdf.text(
-        `Page ${i} of ${pageCount}`,
-        pageWidth / 2, pdf.internal.pageSize.getHeight() - margin / 2,
-        { align: 'center' }
-      );
+      pdf.text('Reporte generado por Nitida AI', pageWidth / 2, footerY, { align: 'center' });
     }
-    
-    const fileName = `UX_Analysis_${imageName.replace(/\.[^/.]+$/, '')}_${new Date().toISOString().split('T')[0]}.pdf`;
-    pdf.save(fileName);
 
+    pdf.save(`Reporte-NitidaAI-${imageName}.pdf`);
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    // Let the UI handle the user-facing error message
-    throw new Error('Failed to generate PDF report.');
+    alert('Error al generar el PDF: ' + error);
   }
 }; 
