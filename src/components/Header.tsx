@@ -65,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
               className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
             >
               <Info className="h-5 w-5" />
-              <span className="font-semibold text-base">About</span>
+              <span className="font-semibold text-base">{getTranslation(currentLanguage, 'about')}</span>
             </button>
             <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors">
               <FileText className="h-5 w-5" />

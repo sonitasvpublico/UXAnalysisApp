@@ -157,16 +157,16 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     pdf.setFont('Poppins', 'normal'); // font normal, no bold
     pdf.setFontSize(styles.fontSize.h2);
     pdf.setTextColor(styles.colors.text);
-    pdf.text('Resumen del análisis', margin, y);
+    pdf.text(getTranslation(currentLanguage, 'pdf_summary'), margin, y);
     y += 24;
     pdf.setFont('Poppins', 'normal');
     pdf.setFontSize(styles.fontSize.body);
     pdf.setTextColor(styles.colors.text);
-    pdf.text(`Imagen: ${imageName}`, margin, y);
+    pdf.text(`${getTranslation(currentLanguage, 'pdf_image')}: ${imageName}`, margin, y);
     y += 18;
-    pdf.text(`País objetivo: ${targetCountry}`, margin, y);
+    pdf.text(`${getTranslation(currentLanguage, 'pdf_target_country')}: ${targetCountry}`, margin, y);
     y += 18;
-    pdf.text(`Issues encontrados: ${results.length}`, margin, y);
+    pdf.text(`${getTranslation(currentLanguage, 'pdf_issues_count')}: ${results.length}`, margin, y);
     y += 28;
 
     // --- IMAGEN ANALIZADA (centrada, tamaño controlado) ---
@@ -190,7 +190,7 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     pdf.setFont('Poppins', 'normal'); // font normal, no bold
     pdf.setFontSize(styles.fontSize.h2);
     pdf.setTextColor(styles.colors.text);
-    pdf.text('Issues encontrados', margin, y);
+    pdf.text(getTranslation(currentLanguage, 'pdf_issues_found'), margin, y);
     y += 28; // más espacio después del título
     if (results.length > 0) {
       const severityOrder = ['critical', 'high', 'medium', 'low'] as const;
@@ -200,7 +200,7 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
           pdf.setFont('Poppins', 'normal'); // font normal para subtítulo
           pdf.setFontSize(styles.fontSize.h3);
           pdf.setTextColor(styles.colors[severity]);
-          pdf.text(`${severityEmojis[severity]} ${severity.charAt(0).toUpperCase() + severity.slice(1)}`, margin + 8, y);
+          pdf.text(`${severityEmojis[severity]} ${getTranslation(currentLanguage, `severity.${severity}`)}`, margin + 8, y);
           y += 28; // más espacio después del título de severidad
           for (const issue of issuesOfSeverity) {
             pdf.setFont('Poppins', 'normal');
@@ -211,7 +211,7 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
             const descLines = pdf.splitTextToSize(issue.description, contentWidth - 56);
             const descLineHeight = (styles.fontSize.body + 1) * 1.5;
             // Definir suggLines y suggLineHeight siempre, aunque no haya sugerencia
-            const suggLines = issue.suggestion ? pdf.splitTextToSize(`Sugerencia: ${issue.suggestion}`, contentWidth - 56) : [];
+            const suggLines = issue.suggestion ? pdf.splitTextToSize(`${getTranslation(currentLanguage, 'pdf_suggestion')}: ${issue.suggestion}`, contentWidth - 56) : [];
             const suggLineHeight = (styles.fontSize.body + 1) * 1.5;
             const blockHeight =
               issueTitleLines.length * (styles.fontSize.body + 2) + 8 +
@@ -230,7 +230,6 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
             y += descLines.length * descLineHeight + 8;
             if (issue.suggestion) {
               y += 6; // más espacio antes de la sugerencia
-              // Usar Poppins ExtraLight en negro, cursiva si es posible
               pdf.setFont('Poppins', 'italic'); // jsPDF no soporta extralightitalic, así que usamos italic
               pdf.setTextColor(styles.colors.text); // negro
               pdf.setFontSize(styles.fontSize.body + 1);
@@ -257,7 +256,7 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
       pdf.setFont('Poppins', 'normal'); // font normal, no bold
       pdf.setFontSize(styles.fontSize.h2);
       pdf.setTextColor(styles.colors.text);
-      pdf.text('Consejos de localización', margin, y);
+      pdf.text(getTranslation(currentLanguage, 'pdf_localization_advice'), margin, y);
       y += 28;
       pdf.setFont('Poppins', 'normal');
       pdf.setFontSize(styles.fontSize.body + 1);
@@ -283,7 +282,7 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
       pdf.setFont('Poppins', 'normal');
       pdf.setFontSize(styles.fontSize.small);
       pdf.setTextColor(styles.colors.textLight);
-      pdf.text('Reporte generado por Nitida AI', pageWidth / 2, footerY, { align: 'center' });
+      pdf.text(getTranslation(currentLanguage, 'pdf_generated_by'), pageWidth / 2, footerY, { align: 'center' });
     }
 
     pdf.save(`Reporte-NitidaAI-${imageName}.pdf`);
