@@ -4,24 +4,24 @@ A professional web application that analyzes images and designs to identify usab
 
 ## ⚠️ Usage Terms & License
 
-**This software is provided for educational, personal, and non-commercial use only.**
+This software and its source code are provided for educational, personal, and non-commercial use only.
 
 ### Commercial Use Restrictions
-- ❌ **No commercial use** without explicit written permission
-- ❌ **No selling** the software or derivative works
-- ❌ **No incorporating** into commercial products or services
-- ❌ **No profit-generating activities** using this software
+- ❌ No commercial use without explicit written permission
+- ❌ No selling the software or derivative works
+- ❌ No incorporating into commercial products or services
+- ❌ No profit-generating activities using this software
 
 ### Attribution Requirement
-- ✅ **Must include attribution**: "Sonia Zavaleta Toukkari - Nítida"
-- ✅ **Must preserve copyright notices** in all copies
+- ✅ Must include attribution: "Sonia Zavaleta Toukkari - Nitida AI"
+- ✅ Must preserve copyright notices in all copies
 
 ### For Commercial Use
-If you want to use this software commercially, please contact:
-- **Author**: Sonia Zavaleta Toukkari
-- **Repository**: https://github.com/sonitasvpublico/Nitida
+If you wish to use this software commercially, you must obtain explicit written permission from the author.
 
-**License**: MIT License with Commercial Use Restrictions - see [LICENSE](LICENSE) file for full terms.
+**Author:** Sonia Zavaleta Toukkari  
+**Repository:** https://github.com/sonitasvpublico/Nitida  
+**License:** Custom Proprietary License – see LICENSE file for full terms.
 
 ## Features
 
