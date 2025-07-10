@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import type { AnalysisResult, LocalizationAdvice, Language } from '../types';
 import { getTranslation } from './translations';
 import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
 
 // --- Font Loading Helper ---
 // Fetches a font file and returns it as a base64 string for jsPDF.
@@ -97,7 +98,7 @@ const ensureSpace = (neededSpace: number, pdf: any, margin: number, y: number) =
 };
 
 function isNativeMobile() {
-  return !!(window && (window as any).Capacitor && (window as any).Capacitor.isNativePlatform);
+  return Capacitor.isNativePlatform();
 }
 
 export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> => {
@@ -292,18 +293,24 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
 
     const fileName = `Reporte-NitidaAI-${imageName}.pdf`;
     if (isNativeMobile()) {
-      // Guardar usando Capacitor Filesystem
-      const pdfBase64 = pdf.output('datauristring').split(',')[1];
-      await Filesystem.writeFile({
-        path: fileName,
-        data: pdfBase64,
-        directory: Directory.Documents,
-      });
-      alert('Reporte guardado en Documentos.');
+      try {
+        const pdfBase64 = pdf.output('datauristring').split(',')[1];
+        await Filesystem.writeFile({
+          path: fileName,
+          data: pdfBase64,
+          directory: Directory.Documents,
+        });
+        alert('Reporte guardado en Documentos.');
+      } catch (fsError) {
+        const msg = typeof fsError === 'object' && fsError && 'message' in fsError ? (fsError as any).message : String(fsError);
+        alert('Error guardando el PDF en el dispositivo: ' + msg);
+        throw fsError;
+      }
     } else {
       pdf.save(fileName);
     }
   } catch (error) {
-    alert('Error al generar el PDF: ' + error);
+    const msg = typeof error === 'object' && error && 'message' in error ? (error as any).message : String(error);
+    alert('Error al generar el PDF: ' + msg);
   }
 }; 
