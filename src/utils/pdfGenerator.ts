@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import type { AnalysisResult, LocalizationAdvice, Language } from '../types';
 import { getTranslation } from './translations';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 
 // --- Font Loading Helper ---
 // Fetches a font file and returns it as a base64 string for jsPDF.
@@ -80,7 +81,7 @@ const categoryEmojis = {
 const severityEmojis = {
   critical: '🔴',
   high: '🟠',
-  medium: '��',
+  medium: '🟡',
   low: '🟢'
 };
 
@@ -94,6 +95,10 @@ const ensureSpace = (neededSpace: number, pdf: any, margin: number, y: number) =
   }
   return y;
 };
+
+function isNativeMobile() {
+  return !!(window && (window as any).Capacitor && (window as any).Capacitor.isNativePlatform);
+}
 
 export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> => {
   try {
@@ -285,7 +290,19 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
       pdf.text(getTranslation(currentLanguage, 'pdf_generated_by'), pageWidth / 2, footerY, { align: 'center' });
     }
 
-    pdf.save(`Reporte-NitidaAI-${imageName}.pdf`);
+    const fileName = `Reporte-NitidaAI-${imageName}.pdf`;
+    if (isNativeMobile()) {
+      // Guardar usando Capacitor Filesystem
+      const pdfBase64 = pdf.output('datauristring').split(',')[1];
+      await Filesystem.writeFile({
+        path: fileName,
+        data: pdfBase64,
+        directory: Directory.Documents,
+      });
+      alert('Reporte guardado en Documentos.');
+    } else {
+      pdf.save(fileName);
+    }
   } catch (error) {
     alert('Error al generar el PDF: ' + error);
   }
