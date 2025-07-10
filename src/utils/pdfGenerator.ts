@@ -108,10 +108,10 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     const pdf = new jsPDF('p', 'pt', 'a4'); // Using points for more control
     
     // --- Load Fonts into PDF ---
-    const poppinsRegularBase64 = await getFontAsBase64('/fonts/Poppins-Regular.ttf');
-    const poppinsBoldBase64 = await getFontAsBase64('/fonts/Poppins-Bold.ttf');
-    const poppinsItalicBase64 = await getFontAsBase64('/fonts/Poppins-Italic.ttf');
-    const poppinsExtraLightBase64 = await getFontAsBase64('/fonts/Poppins-ExtraLight.ttf');
+    const poppinsRegularBase64 = await getFontAsBase64('fonts/Poppins-Regular.ttf');
+    const poppinsBoldBase64 = await getFontAsBase64('fonts/Poppins-Bold.ttf');
+    const poppinsItalicBase64 = await getFontAsBase64('fonts/Poppins-Italic.ttf');
+    const poppinsExtraLightBase64 = await getFontAsBase64('fonts/Poppins-ExtraLight.ttf');
 
     pdf.addFileToVFS('Poppins-Regular.ttf', poppinsRegularBase64);
     pdf.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
@@ -136,18 +136,35 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     const t = (key: string) => getTranslation(currentLanguage, key);
 
     // --- HEADER: Logo + Fecha ---
-    const logoUrl = '/nitida-logo.png';
-    const logoImg = await fetch(logoUrl).then(r => r.blob()).then(blob => {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (typeof reader.result === 'string') resolve(reader.result);
-          else reject('Error reading logo');
+    // Usar ruta relativa para el logo, funciona en local, web y app
+    const logoUrl = 'nitida-logo.png';
+    // Función robusta para obtener base64 de una imagen
+    async function getBase64Image(url: string): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0);
+          const dataURL = canvas.toDataURL('image/png');
+          resolve(dataURL);
         };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
+        img.onerror = function () {
+          reject(new Error('No se pudo cargar la imagen: ' + url));
+        };
+        img.src = url;
       });
-    });
+    }
+    let logoImg: string;
+    try {
+      logoImg = await getBase64Image(logoUrl);
+    } catch (e) {
+      alert('No se pudo cargar el logo para el PDF. Verifica que nitida-logo.png esté en la carpeta public.');
+      throw e;
+    }
     const logoWidth = 120;
     const logoHeight = 34;
     pdf.addImage(logoImg, 'PNG', margin, y, logoWidth, logoHeight, undefined, 'FAST');
@@ -188,7 +205,17 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
       imgW = imgW * scale;
       imgH = imgH * scale;
       const imgX = margin + (contentWidth - imgW) / 2;
-      pdf.addImage(imageUrl, 'PNG', imgX, y, imgW, imgH, undefined, 'FAST');
+      let imgBase64 = imageUrl;
+      // Si no es base64, conviértelo
+      if (!/^data:image\/(png|jpeg);base64,/.test(imageUrl)) {
+        try {
+          imgBase64 = await getBase64Image(imageUrl);
+        } catch (e) {
+          alert('No se pudo cargar la imagen analizada para el PDF.');
+          throw e;
+        }
+      }
+      pdf.addImage(imgBase64, 'PNG', imgX, y, imgW, imgH, undefined, 'FAST');
       y += imgH + 24;
     }
 
