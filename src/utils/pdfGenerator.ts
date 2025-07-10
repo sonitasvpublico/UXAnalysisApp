@@ -108,10 +108,10 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     const pdf = new jsPDF('p', 'pt', 'a4'); // Using points for more control
     
     // --- Load Fonts into PDF ---
-    const poppinsRegularBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-Regular.ttf');
-    const poppinsBoldBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-Bold.ttf');
-    const poppinsItalicBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-Italic.ttf');
-    const poppinsExtraLightBase64 = await getFontAsBase64('/src/assets/fonts/Poppins-ExtraLight.ttf');
+    const poppinsRegularBase64 = await getFontAsBase64('/fonts/Poppins-Regular.ttf');
+    const poppinsBoldBase64 = await getFontAsBase64('/fonts/Poppins-Bold.ttf');
+    const poppinsItalicBase64 = await getFontAsBase64('/fonts/Poppins-Italic.ttf');
+    const poppinsExtraLightBase64 = await getFontAsBase64('/fonts/Poppins-ExtraLight.ttf');
 
     pdf.addFileToVFS('Poppins-Regular.ttf', poppinsRegularBase64);
     pdf.addFont('Poppins-Regular.ttf', 'Poppins', 'normal');
