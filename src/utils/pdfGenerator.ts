@@ -300,7 +300,7 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
           data: pdfBase64,
           directory: Directory.Documents,
         });
-        alert('Reporte guardado en Documentos.');
+        alert('¡Listo! El reporte se guardó en Documentos.');
       } catch (fsError) {
         const msg = typeof fsError === 'object' && fsError && 'message' in fsError ? (fsError as any).message : String(fsError);
         alert('Error guardando el PDF en el dispositivo: ' + msg);
