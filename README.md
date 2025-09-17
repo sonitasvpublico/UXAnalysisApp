@@ -39,7 +39,7 @@ For commercial use or collaboration, please contact:
 
 - **Accessibility**: Color contrast, alt text, keyboard navigation
 - **Usability**: Touch targets, navigation flow, user experience
-- **Design**: Typography, spacing, visual hierarchy
+- **Design**: Typography, spacing, visual hierarchy  
 - **Localization**: Text expansion, cultural considerations, local preferences
 
 ## Severity Levels
@@ -53,7 +53,7 @@ For commercial use or collaboration, please contact:
 
 The application interface supports:
 - English (EN)
-- Spanish (ES)
+- Spanish (ES) 
 - Finnish (FI)
 
 Localization advice covers markets in Spain, Mexico, and Finland with cultural and technical considerations.
