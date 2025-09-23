@@ -41,6 +41,7 @@ function App() {
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
   const [aiResults, setAiResults] = useState<any>(null);
+  const [isTesseractMode, setIsTesseractMode] = useState(false);
   const [localizationAdvice, setLocalizationAdvice] = useState<LocalizationAdviceType[]>([]);
   const [activeTab, setActiveTab] = useState<'results' | 'localization'>('results');
   const analysisRequestId = useRef(0);
@@ -70,6 +71,14 @@ function App() {
       if (aiResultsFromUpload && Object.keys(aiResultsFromUpload).length > 0 && aiResultsFromUpload.responses && aiResultsFromUpload.responses.length > 0) {
         console.log("Generando resultados desde la IA...", aiResultsFromUpload);
         const visionData = aiResultsFromUpload.responses[0];
+        
+        // Detectar si estamos usando Tesseract (por la estructura de datos)
+        const isUsingTesseract = visionData.labelAnnotations && 
+          visionData.labelAnnotations.some((label: any) => 
+            label.description === 'Text' || label.description === 'Document' || label.description === 'Screenshot'
+          );
+        setIsTesseractMode(isUsingTesseract);
+        
         finalAnalysis = generateAnalysisResultsFromAI(visionData, imgDims?.width, imgDims?.height, currentLanguage as Language);
         
         // Si la IA no produjo ningún resultado procesable, usar fallback para no mostrar una pantalla vacía.
@@ -87,7 +96,12 @@ function App() {
       setAnalysisResults(finalAnalysis);
 
       // La localización siempre se obtiene de forma independiente y dinámica.
-      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry, aiResults);
+      // Usar los resultados de IA recién recibidos para evitar usar un estado aún no actualizado
+      const localizationData = getLocalizationAdviceOnly(
+        currentLanguage as Language,
+        targetCountry,
+        aiResultsFromUpload
+      );
       setLocalizationAdvice(localizationData);
 
       setAppState('results');
@@ -100,14 +114,30 @@ function App() {
   };
 
   const handleExportReport = async () => {
-    if (uploadedImage && imageDimensions) {
+    if (uploadedImage) {
+      // Asegurar dimensiones: si faltan, calcularlas al vuelo
+      let dims = imageDimensions;
+      if (!dims) {
+        try {
+          dims = await new Promise<{ width: number; height: number }>((resolve, reject) => {
+            const img = new window.Image();
+            img.onload = () => resolve({ width: img.width, height: img.height });
+            img.onerror = () => reject(new Error('Could not load image to get dimensions.'));
+            img.src = uploadedImage.url;
+          });
+          setImageDimensions(dims);
+        } catch (_) {
+          // Fallback razonable si no se pudo medir
+          dims = { width: 800, height: 600 };
+        }
+      }
       try {
         await generateBeautifulPDF({
           results: analysisResults,
           localizationAdvice,
           imageName: uploadedImage.name,
           imageUrl: uploadedImage.url,
-          imageDimensions,
+          imageDimensions: dims!,
           currentLanguage,
           targetCountry,
           aiResults
@@ -121,6 +151,15 @@ function App() {
           'Virhe raportin viennissä. Yritä uudelleen.' :
           'Error exporting report. Please try again.');
       }
+    } else {
+      // Si faltan datos necesarios, avisar claramente al usuario
+      const msg =
+        currentLanguage === 'es'
+          ? 'Primero sube una imagen y espera a que termine el análisis para exportar.'
+          : currentLanguage === 'fi'
+          ? 'Lataa ensin kuva ja odota analyysin valmistumista ennen vientiä.'
+          : 'Please upload an image and wait for analysis to finish before exporting.';
+      alert(msg);
     }
   };
 
@@ -134,12 +173,22 @@ function App() {
   };
 
   useEffect(() => {
-    // Solo regenerar si ya hay resultados de IA y una imagen cargada
-    if (appState === 'results' && aiResults && imageDimensions) {
+    // Regenerar textos traducidos al cambiar idioma, exista o no IA
+    if (appState === 'results') {
       let finalAnalysis: AnalysisResult[] = [];
-      if (aiResults && Object.keys(aiResults).length > 0 && aiResults.responses && aiResults.responses.length > 0) {
+      if (
+        aiResults &&
+        aiResults.responses &&
+        aiResults.responses.length > 0 &&
+        imageDimensions
+      ) {
         const visionData = aiResults.responses[0];
-        finalAnalysis = generateAnalysisResultsFromAI(visionData, imageDimensions.width, imageDimensions.height, currentLanguage as Language);
+        finalAnalysis = generateAnalysisResultsFromAI(
+          visionData,
+          imageDimensions.width,
+          imageDimensions.height,
+          currentLanguage as Language
+        );
         if (finalAnalysis.length === 0) {
           finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
         }
@@ -147,10 +196,14 @@ function App() {
         finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
       }
       setAnalysisResults(finalAnalysis);
-      const localizationData = getLocalizationAdviceOnly(currentLanguage as Language, targetCountry, aiResults);
+      const localizationData = getLocalizationAdviceOnly(
+        currentLanguage as Language,
+        targetCountry,
+        aiResults
+      );
       setLocalizationAdvice(localizationData);
     }
-  }, [currentLanguage]);
+  }, [currentLanguage, appState, aiResults, imageDimensions, targetCountry]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 relative overflow-hidden">
@@ -262,6 +315,8 @@ function App() {
                   <AIDetectedElements
                     results={aiResults.responses[0]}
                     isLoading={false}
+                    currentLanguage={currentLanguage}
+                    isTesseractMode={isTesseractMode}
                   />
                 )}
                 <div className="mt-8">

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Sparkles, Tag, Type, Box } from 'lucide-react';
+import { Sparkles, Tag, Type, Box, Cpu } from 'lucide-react';
 import type { AIDetectionResult } from '../types';
+import { getTranslation } from '../utils/translations';
+import type { Language } from '../types';
 
 interface AIDetectedElementsProps {
   results: {
@@ -9,9 +11,16 @@ interface AIDetectedElementsProps {
     localizedObjectAnnotations?: AIDetectionResult[];
   } | null;
   isLoading: boolean;
+  currentLanguage?: Language;
+  isTesseractMode?: boolean;
 }
 
-const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({ results, isLoading }) => {
+const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({ 
+  results, 
+  isLoading, 
+  currentLanguage = 'en', 
+  isTesseractMode = false 
+}) => {
   if (isLoading) {
     return (
       <div className="w-full max-w-4xl mx-auto mt-8 p-6 bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100">
@@ -88,6 +97,12 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({ results, isLoad
           <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             AI Detected Elements
           </h3>
+          {isTesseractMode && (
+            <div className="ml-4 flex items-center px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
+              <Cpu className="h-4 w-4 mr-1" />
+              {getTranslation(currentLanguage, 'aiAnalysis.tesseractMode')}
+            </div>
+          )}
         </div>
 
         {/* Results Sections */}

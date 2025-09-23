@@ -80,8 +80,10 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
   };
 
   const handleExportClick = async () => {
+    console.log('[AnalysisResults] Export button clicked');
     try {
       await onExportReport();
+      console.log('[AnalysisResults] onExportReport resolved');
     } catch (error) {
       console.error('Error exporting report:', error);
       const errorMessage = currentLanguage === 'es' ? 
@@ -114,6 +116,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({
             </div>
             <button
               onClick={handleExportClick}
+              title="Export PDF"
               className="mt-4 sm:mt-0 inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg sm:rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105 text-sm sm:text-base"
             >
               <Download className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
