@@ -460,22 +460,120 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
       console.error('❌ atob failed:', atobError);
       console.log('📊 Trying alternative method...');
       
-      // Método alternativo usando fetch (pero con manejo de errores)
+      // Método alternativo usando Canvas
       try {
-        const response = await fetch(base64Image);
-        blob = await response.blob();
-        console.log('✅ Alternative method succeeded, blob size:', blob.size);
-      } catch (fetchError) {
-        console.error('❌ Alternative method also failed:', fetchError);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        return new Promise((resolve, reject) => {
+          img.onload = async () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx?.drawImage(img, 0, 0);
+            
+            canvas.toBlob(async (blob) => {
+              if (!blob) {
+                reject(new Error('Could not create blob from canvas'));
+                return;
+              }
+              
+              console.log('✅ Canvas method succeeded, blob size:', blob.size);
+              
+              try {
+                console.log('🔍 Recognizing text with Tesseract...');
+                const { data: { text, words } } = await worker.recognize(blob);
+                console.log('✅ Text recognized:', text.substring(0, 100) + '...');
+                console.log('📝 Words found:', words.length);
+                console.log('📝 First few words:', words.slice(0, 5).map(w => w.text));
+                console.log('📝 Full text length:', text.length);
+                console.log('📝 Is text empty?', text.trim().length === 0);
+                
+                await worker.terminate();
+                console.log('✅ Tesseract worker terminated');
+
+                // Simular la estructura de respuesta de Google Vision API
+                const mockResponse = {
+                  responses: [{
+                    textAnnotations: [
+                      {
+                        description: text,
+                        boundingPoly: {
+                          vertices: [
+                            { x: 0, y: 0 },
+                            { x: 100, y: 0 },
+                            { x: 100, y: 50 },
+                            { x: 0, y: 50 }
+                          ]
+                        }
+                      },
+                      ...words.map((word: any, index: number) => ({
+                        description: word.text,
+                        boundingPoly: {
+                          vertices: [
+                            { x: word.bbox.x0, y: word.bbox.y0 },
+                            { x: word.bbox.x1, y: word.bbox.y0 },
+                            { x: word.bbox.x1, y: word.bbox.y1 },
+                            { x: word.bbox.x0, y: word.bbox.y1 }
+                          ]
+                        }
+                      }))
+                    ],
+                    labelAnnotations: [
+                      { description: 'Text', score: 0.9 },
+                      { description: 'Document', score: 0.8 },
+                      { description: 'Screenshot', score: 0.7 },
+                      { description: 'UI Element', score: 0.6 },
+                      { description: 'Button', score: 0.5 },
+                      { description: 'Form', score: 0.4 },
+                      { description: 'Navigation', score: 0.3 }
+                    ],
+                    localizedObjectAnnotations: []
+                  }]
+                };
+
+                console.log('🎉 Tesseract.js analysis completed:', mockResponse);
+                console.log('🎉 Mock response structure:', {
+                  hasResponses: !!mockResponse.responses,
+                  responsesLength: mockResponse.responses?.length,
+                  firstResponse: mockResponse.responses?.[0] ? {
+                    hasTextAnnotations: !!mockResponse.responses[0].textAnnotations,
+                    textAnnotationsLength: mockResponse.responses[0].textAnnotations?.length,
+                    hasLabelAnnotations: !!mockResponse.responses[0].labelAnnotations,
+                    labelAnnotationsLength: mockResponse.responses[0].labelAnnotations?.length
+                  } : null
+                });
+                
+                console.log('🎉 Returning mockResponse to App.tsx...');
+                resolve(mockResponse);
+              } catch (error) {
+                console.error('❌ Error during Tesseract analysis:', error);
+                await worker.terminate();
+                reject(error);
+              }
+            }, 'image/png');
+          };
+          
+          img.onerror = () => {
+            reject(new Error('Could not load image'));
+          };
+          
+          img.src = base64Image;
+        });
+      } catch (canvasError) {
+        console.error('❌ Canvas method also failed:', canvasError);
         throw new Error('Could not convert base64 to blob');
       }
     }
 
+    // Si llegamos aquí, el método atob funcionó
     console.log('🔍 Recognizing text with Tesseract...');
     const { data: { text, words } } = await worker.recognize(blob);
     console.log('✅ Text recognized:', text.substring(0, 100) + '...');
     console.log('📝 Words found:', words.length);
     console.log('📝 First few words:', words.slice(0, 5).map(w => w.text));
+    console.log('📝 Full text length:', text.length);
+    console.log('📝 Is text empty?', text.trim().length === 0);
     
     await worker.terminate();
     console.log('✅ Tesseract worker terminated');
