@@ -432,6 +432,7 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     console.log('🔄 Converting base64 to blob...');
     console.log('📊 Base64 string length:', base64Image.length);
     console.log('📊 Base64 starts with:', base64Image.substring(0, 50));
+    console.log('📊 Base64 contains comma?', base64Image.includes(','));
     
     // Método más robusto para convertir base64 a blob
     let base64Data: string;
@@ -441,14 +442,18 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
       // Si tiene prefijo data:image/..., extraer solo la parte base64
       base64Data = base64Image.split(',')[1];
       console.log('📊 Extracted base64 data length:', base64Data.length);
+      console.log('📊 Extracted base64 starts with:', base64Data.substring(0, 20));
     } else {
       // Si no tiene prefijo, usar tal como está
       base64Data = base64Image;
       console.log('📊 Using base64 as-is, length:', base64Data.length);
+      console.log('📊 Base64 as-is starts with:', base64Data.substring(0, 20));
     }
     
     try {
+      console.log('🔄 Attempting atob conversion...');
       const binaryString = atob(base64Data);
+      console.log('✅ atob conversion successful, binary length:', binaryString.length);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
         bytes[i] = binaryString.charCodeAt(i);
@@ -458,22 +463,27 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
       console.log('✅ Base64 converted to blob, size:', blob.size);
     } catch (atobError) {
       console.error('❌ atob failed:', atobError);
-      console.log('📊 Trying alternative method...');
+      console.log('📊 Trying Canvas method...');
       
       // Método alternativo usando Canvas
       try {
+        console.log('🔄 Creating Canvas for image conversion...');
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
         
+        console.log('🔄 Setting up Canvas promise...');
         return new Promise((resolve, reject) => {
           img.onload = async () => {
+            console.log('✅ Image loaded in Canvas, dimensions:', img.width, 'x', img.height);
             canvas.width = img.width;
             canvas.height = img.height;
             ctx?.drawImage(img, 0, 0);
             
+            console.log('🔄 Converting Canvas to blob...');
             canvas.toBlob(async (blob) => {
               if (!blob) {
+                console.error('❌ Canvas toBlob returned null');
                 reject(new Error('Could not create blob from canvas'));
                 return;
               }
@@ -555,9 +565,11 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
           };
           
           img.onerror = () => {
+            console.error('❌ Image failed to load in Canvas');
             reject(new Error('Could not load image'));
           };
           
+          console.log('🔄 Setting image src to base64...');
           img.src = base64Image;
         });
       } catch (canvasError) {
