@@ -425,17 +425,46 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
 
     // Convertir base64 a blob para Tesseract
     console.log('🔄 Converting base64 to blob...');
+    console.log('📊 Base64 string length:', base64Image.length);
+    console.log('📊 Base64 starts with:', base64Image.substring(0, 50));
     
-    // Método más eficiente para convertir base64 a blob sin usar fetch
-    const base64Data = base64Image.split(',')[1]; // Remover el prefijo data:image/...
-    const binaryString = atob(base64Data);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
+    // Método más robusto para convertir base64 a blob
+    let base64Data: string;
+    let blob: Blob;
+    
+    if (base64Image.includes(',')) {
+      // Si tiene prefijo data:image/..., extraer solo la parte base64
+      base64Data = base64Image.split(',')[1];
+      console.log('📊 Extracted base64 data length:', base64Data.length);
+    } else {
+      // Si no tiene prefijo, usar tal como está
+      base64Data = base64Image;
+      console.log('📊 Using base64 as-is, length:', base64Data.length);
     }
-    const blob = new Blob([bytes], { type: 'image/png' });
     
-    console.log('✅ Base64 converted to blob, size:', blob.size);
+    try {
+      const binaryString = atob(base64Data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      blob = new Blob([bytes], { type: 'image/png' });
+      
+      console.log('✅ Base64 converted to blob, size:', blob.size);
+    } catch (atobError) {
+      console.error('❌ atob failed:', atobError);
+      console.log('📊 Trying alternative method...');
+      
+      // Método alternativo usando fetch (pero con manejo de errores)
+      try {
+        const response = await fetch(base64Image);
+        blob = await response.blob();
+        console.log('✅ Alternative method succeeded, blob size:', blob.size);
+      } catch (fetchError) {
+        console.error('❌ Alternative method also failed:', fetchError);
+        throw new Error('Could not convert base64 to blob');
+      }
+    }
 
     console.log('🔍 Recognizing text with Tesseract...');
     const { data: { text, words } } = await worker.recognize(blob);
