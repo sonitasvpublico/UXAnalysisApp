@@ -409,6 +409,7 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
 
 // Nueva función que usa Tesseract.js como alternativa gratuita
 export async function analyzeImageWithTesseract(base64Image: string): Promise<any> {
+  console.log('🚀🚀🚀 STARTING TESSERACT.JS ANALYSIS - NEW VERSION 🚀🚀🚀');
   console.log('🔍 Starting Tesseract.js analysis...');
   
   try {
