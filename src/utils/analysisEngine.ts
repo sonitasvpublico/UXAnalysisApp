@@ -420,172 +420,121 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     
     console.log('👷 Creating Tesseract worker...');
     const worker = await createWorker('eng', 1, {
-      logger: m => console.log('Tesseract:', m),
-      // Configuración mejorada para mejor detección
-      tessedit_pageseg_mode: '1', // Detección automática de página
-      tessedit_ocr_engine_mode: '1', // Motor OCR LSTM
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?@#$%^&*()_+-=[]{}|;:,.<>?/~`"\'\\', // Caracteres permitidos
+      logger: m => console.log('Tesseract:', m)
     });
     console.log('✅ Tesseract worker created');
 
-    // Convertir base64 a blob para Tesseract
-    console.log('🔄 Converting base64 to blob...');
-    console.log('📊 Base64 string length:', base64Image.length);
-    console.log('📊 Base64 starts with:', base64Image.substring(0, 50));
-    console.log('📊 Base64 contains comma?', base64Image.includes(','));
+    // Método simplificado para convertir base64 a blob
+    console.log('🔄 Converting base64 to blob (simplified method)...');
     
-    // Método más robusto para convertir base64 a blob
-    let base64Data: string;
     let blob: Blob;
     
-    if (base64Image.includes(',')) {
-      // Si tiene prefijo data:image/..., extraer solo la parte base64
-      base64Data = base64Image.split(',')[1];
-      console.log('📊 Extracted base64 data length:', base64Data.length);
-      console.log('📊 Extracted base64 starts with:', base64Data.substring(0, 20));
-    } else {
-      // Si no tiene prefijo, usar tal como está
-      base64Data = base64Image;
-      console.log('📊 Using base64 as-is, length:', base64Data.length);
-      console.log('📊 Base64 as-is starts with:', base64Data.substring(0, 20));
-    }
-    
     try {
-      console.log('🔄 Attempting atob conversion...');
-      const binaryString = atob(base64Data);
-      console.log('✅ atob conversion successful, binary length:', binaryString.length);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      blob = new Blob([bytes], { type: 'image/png' });
+      // Método directo usando fetch
+      console.log('🔄 Trying direct fetch method...');
+      const response = await fetch(base64Image);
+      blob = await response.blob();
+      console.log('✅ Direct fetch method succeeded, blob size:', blob.size);
+    } catch (fetchError) {
+      console.error('❌ Direct fetch failed:', fetchError);
+      console.log('🔄 Trying Canvas method...');
       
-      console.log('✅ Base64 converted to blob, size:', blob.size);
-    } catch (atobError) {
-      console.error('❌ atob failed:', atobError);
-      console.log('📊 Trying Canvas method...');
+      // Método Canvas como fallback
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
       
-      // Método alternativo usando Canvas
-      try {
-        console.log('🔄 Creating Canvas for image conversion...');
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        console.log('🔄 Setting up Canvas promise...');
-        return new Promise((resolve, reject) => {
-          img.onload = async () => {
-            console.log('✅ Image loaded in Canvas, dimensions:', img.width, 'x', img.height);
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx?.drawImage(img, 0, 0);
+      return new Promise((resolve, reject) => {
+        img.onload = async () => {
+          console.log('✅ Image loaded in Canvas, dimensions:', img.width, 'x', img.height);
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx?.drawImage(img, 0, 0);
+          
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              console.error('❌ Canvas toBlob returned null');
+              reject(new Error('Could not create blob from canvas'));
+              return;
+            }
             
-            console.log('🔄 Converting Canvas to blob...');
-            canvas.toBlob(async (blob) => {
-              if (!blob) {
-                console.error('❌ Canvas toBlob returned null');
-                reject(new Error('Could not create blob from canvas'));
-                return;
-              }
+            console.log('✅ Canvas method succeeded, blob size:', blob.size);
+            
+            try {
+              console.log('🔍 Recognizing text with Tesseract...');
+              const { data: { text, words } } = await worker.recognize(blob);
+              console.log('✅ Text recognized:', text.substring(0, 100) + '...');
+              console.log('📝 Words found:', words.length);
+              console.log('📝 First few words:', words.slice(0, 5).map(w => w.text));
               
-              console.log('✅ Canvas method succeeded, blob size:', blob.size);
-              
-              try {
-                console.log('🔍 Recognizing text with Tesseract...');
-                const { data: { text, words } } = await worker.recognize(blob);
-                console.log('✅ Text recognized:', text.substring(0, 100) + '...');
-                console.log('📝 Words found:', words.length);
-                console.log('📝 First few words:', words.slice(0, 5).map(w => w.text));
-                console.log('📝 Full text length:', text.length);
-                console.log('📝 Is text empty?', text.trim().length === 0);
-                
-                await worker.terminate();
-                console.log('✅ Tesseract worker terminated');
+              await worker.terminate();
+              console.log('✅ Tesseract worker terminated');
 
-                // Simular la estructura de respuesta de Google Vision API
-                const mockResponse = {
-                  responses: [{
-                    textAnnotations: [
-                      {
-                        description: text,
-                        boundingPoly: {
-                          vertices: [
-                            { x: 0, y: 0 },
-                            { x: 100, y: 0 },
-                            { x: 100, y: 50 },
-                            { x: 0, y: 50 }
-                          ]
-                        }
-                      },
-                      ...words.map((word: any, index: number) => ({
-                        description: word.text,
-                        boundingPoly: {
-                          vertices: [
-                            { x: word.bbox.x0, y: word.bbox.y0 },
-                            { x: word.bbox.x1, y: word.bbox.y0 },
-                            { x: word.bbox.x1, y: word.bbox.y1 },
-                            { x: word.bbox.x0, y: word.bbox.y1 }
-                          ]
-                        }
-                      }))
-                    ],
-                    labelAnnotations: [
-                      { description: 'Text', score: 0.9 },
-                      { description: 'Document', score: 0.8 },
-                      { description: 'Screenshot', score: 0.7 },
-                      { description: 'UI Element', score: 0.6 },
-                      { description: 'Button', score: 0.5 },
-                      { description: 'Form', score: 0.4 },
-                      { description: 'Navigation', score: 0.3 }
-                    ],
-                    localizedObjectAnnotations: []
-                  }]
-                };
+              // Simular la estructura de respuesta de Google Vision API
+              const mockResponse = {
+                responses: [{
+                  textAnnotations: [
+                    {
+                      description: text,
+                      boundingPoly: {
+                        vertices: [
+                          { x: 0, y: 0 },
+                          { x: 100, y: 0 },
+                          { x: 100, y: 50 },
+                          { x: 0, y: 50 }
+                        ]
+                      }
+                    },
+                    ...words.map((word: any, index: number) => ({
+                      description: word.text,
+                      boundingPoly: {
+                        vertices: [
+                          { x: word.bbox.x0, y: word.bbox.y0 },
+                          { x: word.bbox.x1, y: word.bbox.y0 },
+                          { x: word.bbox.x1, y: word.bbox.y1 },
+                          { x: word.bbox.x0, y: word.bbox.y1 }
+                        ]
+                      }
+                    }))
+                  ],
+                  labelAnnotations: [
+                    { description: 'Text', score: 0.9 },
+                    { description: 'Document', score: 0.8 },
+                    { description: 'Screenshot', score: 0.7 },
+                    { description: 'UI Element', score: 0.6 },
+                    { description: 'Button', score: 0.5 },
+                    { description: 'Form', score: 0.4 },
+                    { description: 'Navigation', score: 0.3 }
+                  ],
+                  localizedObjectAnnotations: []
+                }]
+              };
 
-                console.log('🎉 Tesseract.js analysis completed:', mockResponse);
-                console.log('🎉 Mock response structure:', {
-                  hasResponses: !!mockResponse.responses,
-                  responsesLength: mockResponse.responses?.length,
-                  firstResponse: mockResponse.responses?.[0] ? {
-                    hasTextAnnotations: !!mockResponse.responses[0].textAnnotations,
-                    textAnnotationsLength: mockResponse.responses[0].textAnnotations?.length,
-                    hasLabelAnnotations: !!mockResponse.responses[0].labelAnnotations,
-                    labelAnnotationsLength: mockResponse.responses[0].labelAnnotations?.length
-                  } : null
-                });
-                
-                console.log('🎉 Returning mockResponse to App.tsx...');
-                resolve(mockResponse);
-              } catch (error) {
-                console.error('❌ Error during Tesseract analysis:', error);
-                await worker.terminate();
-                reject(error);
-              }
-            }, 'image/png');
-          };
-          
-          img.onerror = () => {
-            console.error('❌ Image failed to load in Canvas');
-            reject(new Error('Could not load image'));
-          };
-          
-          console.log('🔄 Setting image src to base64...');
-          img.src = base64Image;
-        });
-      } catch (canvasError) {
-        console.error('❌ Canvas method also failed:', canvasError);
-        throw new Error('Could not convert base64 to blob');
-      }
+              console.log('🎉 Tesseract.js analysis completed:', mockResponse);
+              resolve(mockResponse);
+            } catch (error) {
+              console.error('❌ Error during Tesseract analysis:', error);
+              await worker.terminate();
+              reject(error);
+            }
+          }, 'image/png');
+        };
+        
+        img.onerror = () => {
+          console.error('❌ Image failed to load in Canvas');
+          reject(new Error('Could not load image'));
+        };
+        
+        img.src = base64Image;
+      });
     }
 
-    // Si llegamos aquí, el método atob funcionó
+    // Si llegamos aquí, el método fetch funcionó
     console.log('🔍 Recognizing text with Tesseract...');
     const { data: { text, words } } = await worker.recognize(blob);
     console.log('✅ Text recognized:', text.substring(0, 100) + '...');
     console.log('📝 Words found:', words.length);
     console.log('📝 First few words:', words.slice(0, 5).map(w => w.text));
-    console.log('📝 Full text length:', text.length);
-    console.log('📝 Is text empty?', text.trim().length === 0);
     
     await worker.terminate();
     console.log('✅ Tesseract worker terminated');
@@ -631,18 +580,6 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     };
 
     console.log('🎉 Tesseract.js analysis completed:', mockResponse);
-    console.log('🎉 Mock response structure:', {
-      hasResponses: !!mockResponse.responses,
-      responsesLength: mockResponse.responses?.length,
-      firstResponse: mockResponse.responses?.[0] ? {
-        hasTextAnnotations: !!mockResponse.responses[0].textAnnotations,
-        textAnnotationsLength: mockResponse.responses[0].textAnnotations?.length,
-        hasLabelAnnotations: !!mockResponse.responses[0].labelAnnotations,
-        labelAnnotationsLength: mockResponse.responses[0].labelAnnotations?.length
-      } : null
-    });
-    
-    console.log('🎉 Returning mockResponse to App.tsx...');
     return mockResponse;
 
   } catch (error) {
