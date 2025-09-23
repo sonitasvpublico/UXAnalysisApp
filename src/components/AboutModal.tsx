@@ -47,8 +47,9 @@ const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onRequestClose, current
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl shadow-lg">
             <Sparkles className="h-8 w-8 text-white" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
-            {t('title')}
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
+            <span className="hidden sm:inline">{t('title')}</span>
+            <span className="sm:hidden">Nitida AI</span>
           </h2>
         </div>
         
