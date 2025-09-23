@@ -2,7 +2,7 @@ import type { Language } from '../types';
 
 export const translations = {
   en: {
-    title: 'UI/UX Analysis Tool',
+    title: 'Nitida AI',
     subtitle: 'Professional design analysis and localization recommendations',
     uploadTitle: 'Upload Your Design',
     uploadDescription: 'Drag and drop your screenshot or UI design to get started with AI-powered analysis',
@@ -96,7 +96,7 @@ export const translations = {
     about: 'Info',
   },
   es: {
-    title: 'Herramienta de Análisis UI/UX',
+    title: 'Nitida AI',
     subtitle: 'Análisis profesional de diseño y recomendaciones de localización',
     uploadTitle: 'Sube tu Diseño',
     uploadDescription: 'Arrastra y suelta tu captura de pantalla o diseño UI para comenzar el análisis con IA',
@@ -190,7 +190,7 @@ export const translations = {
     about: 'Info',
   },
   fi: {
-    title: 'UI/UX Analysointityökalu',
+    title: 'Nitida AI',
     subtitle: 'Ammattimainen suunnitteluanalyysi ja lokalisointisuositukset',
     uploadTitle: 'Lataa Suunnitelmasi',
     uploadDescription: 'Vedä ja pudota kuvakaappauksesi tai käyttöliittymäsuunnitelmasi aloittaaksesi AI-pohjaisen analyysin',
