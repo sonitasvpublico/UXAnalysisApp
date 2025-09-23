@@ -420,7 +420,11 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     
     console.log('👷 Creating Tesseract worker...');
     const worker = await createWorker('eng', 1, {
-      logger: m => console.log('Tesseract:', m)
+      logger: m => console.log('Tesseract:', m),
+      // Configuración mejorada para mejor detección
+      tessedit_pageseg_mode: '1', // Detección automática de página
+      tessedit_ocr_engine_mode: '1', // Motor OCR LSTM
+      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?@#$%^&*()_+-=[]{}|;:,.<>?/~`"\'\\', // Caracteres permitidos
     });
     console.log('✅ Tesseract worker created');
 
@@ -506,7 +510,11 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
         labelAnnotations: [
           { description: 'Text', score: 0.9 },
           { description: 'Document', score: 0.8 },
-          { description: 'Screenshot', score: 0.7 }
+          { description: 'Screenshot', score: 0.7 },
+          { description: 'UI Element', score: 0.6 },
+          { description: 'Button', score: 0.5 },
+          { description: 'Form', score: 0.4 },
+          { description: 'Navigation', score: 0.3 }
         ],
         localizedObjectAnnotations: []
       }]
