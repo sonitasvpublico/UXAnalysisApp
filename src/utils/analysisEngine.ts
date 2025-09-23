@@ -532,6 +532,7 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
       } : null
     });
     
+    console.log('🎉 Returning mockResponse to App.tsx...');
     return mockResponse;
 
   } catch (error) {

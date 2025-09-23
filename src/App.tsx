@@ -329,6 +329,9 @@ function App() {
                   console.log("📊 aiResults:", aiResults);
                   console.log("📊 aiResults.responses:", aiResults?.responses);
                   console.log("📊 aiResults.responses[0]:", aiResults?.responses?.[0]);
+                  console.log("📊 aiResults.responses[0] keys:", Object.keys(aiResults?.responses?.[0] || {}));
+                  console.log("📊 aiResults.responses[0] textAnnotations:", aiResults?.responses?.[0]?.textAnnotations?.length);
+                  console.log("📊 aiResults.responses[0] labelAnnotations:", aiResults?.responses?.[0]?.labelAnnotations?.length);
                   console.log("📊 Should show AIDetectedElements:", !!(aiResults && aiResults.responses && aiResults.responses[0]));
                   
                   return aiResults && aiResults.responses && aiResults.responses[0] ? (
