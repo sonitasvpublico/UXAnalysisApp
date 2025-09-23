@@ -21,6 +21,18 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({
   currentLanguage = 'en', 
   isTesseractMode = false 
 }) => {
+  console.log('🔍 AIDetectedElements render:', {
+    results,
+    isLoading,
+    currentLanguage,
+    isTesseractMode,
+    hasResults: !!results,
+    resultsKeys: results ? Object.keys(results) : null,
+    textAnnotations: results?.textAnnotations?.length,
+    labelAnnotations: results?.labelAnnotations?.length,
+    localizedObjectAnnotations: results?.localizedObjectAnnotations?.length
+  });
+
   if (isLoading) {
     return (
       <div className="w-full max-w-4xl mx-auto mt-8 p-6 bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100">
@@ -41,6 +53,13 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({
     (!results.textAnnotations || results.textAnnotations.length === 0) &&
     (!results.localizedObjectAnnotations || results.localizedObjectAnnotations.length === 0)
   )) {
+    console.log('❌ AIDetectedElements: Not showing because no results or empty results');
+    console.log('❌ Results check:', {
+      hasResults: !!results,
+      hasLabelAnnotations: results?.labelAnnotations?.length > 0,
+      hasTextAnnotations: results?.textAnnotations?.length > 0,
+      hasLocalizedObjectAnnotations: results?.localizedObjectAnnotations?.length > 0
+    });
     return null;
   }
 

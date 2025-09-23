@@ -75,6 +75,8 @@ function App() {
       console.log("📊 aiResultsFromUpload:", aiResultsFromUpload);
       console.log("📊 aiResultsFromUpload keys:", Object.keys(aiResultsFromUpload || {}));
       console.log("📊 aiResultsFromUpload responses:", aiResultsFromUpload?.responses?.length);
+      console.log("📊 aiResultsFromUpload responses[0]:", aiResultsFromUpload?.responses?.[0]);
+      console.log("📊 aiResultsFromUpload responses[0] keys:", Object.keys(aiResultsFromUpload?.responses?.[0] || {}));
 
       if (aiResultsFromUpload && Object.keys(aiResultsFromUpload).length > 0 && aiResultsFromUpload.responses && aiResultsFromUpload.responses.length > 0) {
         console.log("✅ Generando resultados desde la IA...", aiResultsFromUpload);

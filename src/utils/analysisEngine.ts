@@ -441,6 +441,7 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     const { data: { text, words } } = await worker.recognize(blob);
     console.log('✅ Text recognized:', text.substring(0, 100) + '...');
     console.log('📝 Words found:', words.length);
+    console.log('📝 First few words:', words.slice(0, 5).map(w => w.text));
     
     await worker.terminate();
     console.log('✅ Tesseract worker terminated');
@@ -482,6 +483,17 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     };
 
     console.log('🎉 Tesseract.js analysis completed:', mockResponse);
+    console.log('🎉 Mock response structure:', {
+      hasResponses: !!mockResponse.responses,
+      responsesLength: mockResponse.responses?.length,
+      firstResponse: mockResponse.responses?.[0] ? {
+        hasTextAnnotations: !!mockResponse.responses[0].textAnnotations,
+        textAnnotationsLength: mockResponse.responses[0].textAnnotations?.length,
+        hasLabelAnnotations: !!mockResponse.responses[0].labelAnnotations,
+        labelAnnotationsLength: mockResponse.responses[0].labelAnnotations?.length
+      } : null
+    });
+    
     return mockResponse;
 
   } catch (error) {
