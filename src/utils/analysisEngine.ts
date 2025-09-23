@@ -342,12 +342,16 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
   const apiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
   const apiURL = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
 
+  console.log('🔑 API Key present:', !!apiKey);
+  console.log('🔑 API Key valid:', apiKey !== 'TU_API_key_AQUI');
+
   if (!apiKey || apiKey === 'TU_API_key_AQUI') {
-    console.warn('Google Vision API key is not set. Using Tesseract.js fallback.');
+    console.warn('⚠️ Google Vision API key is not set. Using Tesseract.js fallback.');
     return await analyzeImageWithTesseract(base64Image);
   }
 
   try {
+    console.log('🌐 Making request to Google Vision API...');
     const response = await fetch(apiURL, {
       method: 'POST',
       headers: {
@@ -369,27 +373,32 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
       }),
     });
 
+    console.log('📡 Response status:', response.status);
+    console.log('📡 Response ok:', response.ok);
+
     if (!response.ok) {
       const errorBody = await response.json();
-      console.error('Google Vision API request failed:', errorBody);
+      console.error('❌ Google Vision API request failed:', errorBody);
       
       // Si es un error de billing, usar Tesseract.js como fallback
       if (errorBody.error?.code === 403 && errorBody.error?.message?.includes('billing')) {
-        console.warn('Google Vision API requires billing. Falling back to Tesseract.js.');
+        console.warn('💰 Google Vision API requires billing. Falling back to Tesseract.js.');
         return await analyzeImageWithTesseract(base64Image);
       }
       
       throw new Error(`API Error: ${errorBody.error?.message || response.statusText}`);
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('✅ Google Vision API success:', result);
+    return result;
 
   } catch (error) {
-    console.error('Error calling Google Vision API:', error);
+    console.error('❌ Error calling Google Vision API:', error);
     
     // Si es un error de red o API, intentar con Tesseract.js
     if (error instanceof Error && (error.message.includes('billing') || error.message.includes('Network'))) {
-      console.warn('Falling back to Tesseract.js due to API error.');
+      console.warn('🔄 Falling back to Tesseract.js due to API error.');
       return await analyzeImageWithTesseract(base64Image);
     }
     
@@ -400,21 +409,41 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
 
 // Nueva función que usa Tesseract.js como alternativa gratuita
 export async function analyzeImageWithTesseract(base64Image: string): Promise<any> {
+  console.log('🔍 Starting Tesseract.js analysis...');
+  
   try {
     // Importar Tesseract dinámicamente para evitar problemas de bundle
+    console.log('📦 Importing Tesseract.js...');
     const { createWorker } = await import('tesseract.js');
+    console.log('✅ Tesseract.js imported successfully');
     
+    console.log('👷 Creating Tesseract worker...');
     const worker = await createWorker('eng', 1, {
       logger: m => console.log('Tesseract:', m)
     });
+    console.log('✅ Tesseract worker created');
 
     // Convertir base64 a blob para Tesseract
-    const response = await fetch(base64Image);
-    const blob = await response.blob();
+    console.log('🔄 Converting base64 to blob...');
+    
+    // Método más eficiente para convertir base64 a blob sin usar fetch
+    const base64Data = base64Image.split(',')[1]; // Remover el prefijo data:image/...
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    const blob = new Blob([bytes], { type: 'image/png' });
+    
+    console.log('✅ Base64 converted to blob, size:', blob.size);
 
+    console.log('🔍 Recognizing text with Tesseract...');
     const { data: { text, words } } = await worker.recognize(blob);
+    console.log('✅ Text recognized:', text.substring(0, 100) + '...');
+    console.log('📝 Words found:', words.length);
     
     await worker.terminate();
+    console.log('✅ Tesseract worker terminated');
 
     // Simular la estructura de respuesta de Google Vision API
     const mockResponse = {
@@ -452,11 +481,11 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
       }]
     };
 
-    console.log('Tesseract.js analysis completed:', mockResponse);
+    console.log('🎉 Tesseract.js analysis completed:', mockResponse);
     return mockResponse;
 
   } catch (error) {
-    console.error('Error with Tesseract.js:', error);
+    console.error('❌ Error with Tesseract.js:', error);
     // Si Tesseract también falla, devolver estructura vacía
     return {
       responses: [{

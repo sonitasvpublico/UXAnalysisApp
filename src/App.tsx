@@ -65,21 +65,32 @@ function App() {
     }
     setAiResults(aiResultsFromUpload);
 
+    // Pequeño delay para mostrar el spinner
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     try {
       let finalAnalysis: AnalysisResult[];
 
+      console.log("🔄 Processing AI results in App.tsx...");
+      console.log("📊 aiResultsFromUpload:", aiResultsFromUpload);
+      console.log("📊 aiResultsFromUpload keys:", Object.keys(aiResultsFromUpload || {}));
+      console.log("📊 aiResultsFromUpload responses:", aiResultsFromUpload?.responses?.length);
+
       if (aiResultsFromUpload && Object.keys(aiResultsFromUpload).length > 0 && aiResultsFromUpload.responses && aiResultsFromUpload.responses.length > 0) {
-        console.log("Generando resultados desde la IA...", aiResultsFromUpload);
+        console.log("✅ Generando resultados desde la IA...", aiResultsFromUpload);
         const visionData = aiResultsFromUpload.responses[0];
+        console.log("📊 Vision data:", visionData);
         
         // Detectar si estamos usando Tesseract (por la estructura de datos)
         const isUsingTesseract = visionData.labelAnnotations && 
           visionData.labelAnnotations.some((label: any) => 
             label.description === 'Text' || label.description === 'Document' || label.description === 'Screenshot'
           );
+        console.log("🔍 Is using Tesseract:", isUsingTesseract);
         setIsTesseractMode(isUsingTesseract);
         
         finalAnalysis = generateAnalysisResultsFromAI(visionData, imgDims?.width, imgDims?.height, currentLanguage as Language);
+        console.log("📊 Generated analysis results:", finalAnalysis.length, "items");
         
         // Si la IA no produjo ningún resultado procesable, usar fallback para no mostrar una pantalla vacía.
         if (finalAnalysis.length === 0) {
@@ -311,14 +322,22 @@ function App() {
             {activeTab === 'results' && uploadedImage && (
               <>
                 {/* AI Detected Elements section - visible if aiResults exist */}
-                {aiResults && aiResults.responses && aiResults.responses[0] && (
-                  <AIDetectedElements
-                    results={aiResults.responses[0]}
-                    isLoading={false}
-                    currentLanguage={currentLanguage}
-                    isTesseractMode={isTesseractMode}
-                  />
-                )}
+                {(() => {
+                  console.log("🔍 Checking AIDetectedElements visibility...");
+                  console.log("📊 aiResults:", aiResults);
+                  console.log("📊 aiResults.responses:", aiResults?.responses);
+                  console.log("📊 aiResults.responses[0]:", aiResults?.responses?.[0]);
+                  console.log("📊 Should show AIDetectedElements:", !!(aiResults && aiResults.responses && aiResults.responses[0]));
+                  
+                  return aiResults && aiResults.responses && aiResults.responses[0] ? (
+                    <AIDetectedElements
+                      results={aiResults.responses[0]}
+                      isLoading={false}
+                      currentLanguage={currentLanguage}
+                      isTesseractMode={isTesseractMode}
+                    />
+                  ) : null;
+                })()}
                 <div className="mt-8">
               <AnalysisResults
                 results={analysisResults}

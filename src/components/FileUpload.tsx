@@ -75,9 +75,15 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, currentLanguage, 
       });
 
       const base64 = await fileToBase64(file);
+      console.log('📸 Image converted to base64, length:', base64.length);
+      
+      console.log('🤖 Starting AI analysis...');
       const visionResult = await analyzeImageWithVisionAPI(base64);
 
-      console.log("Respuesta de Google Vision API:", visionResult);
+      console.log("📊 Respuesta de Google Vision API:", visionResult);
+      console.log("📊 Vision result keys:", Object.keys(visionResult));
+      console.log("📊 Vision result responses:", visionResult?.responses?.length);
+      
       onFileUpload(uploadedImage, visionResult, imgDims);
 
     } catch (err) {
