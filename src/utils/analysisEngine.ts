@@ -419,14 +419,13 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
     console.log('✅ Tesseract.js imported successfully');
     
     console.log('👷 Creating Tesseract worker...');
-    const worker = await Promise.race([
-      createWorker({
-        logger: m => console.log('Tesseract:', m)
-      }),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Tesseract worker creation timeout')), 10000)
-      )
-    ]);
+    const worker = await createWorker('eng', 1, {
+      logger: m => {
+        if (m.status === 'recognizing text') {
+          console.log(`Tesseract progress: ${Math.round(m.progress * 100)}%`);
+        }
+      }
+    });
     console.log('✅ Tesseract worker created');
 
     // Usar Canvas directamente para convertir base64 a blob
@@ -503,7 +502,8 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
                   { description: 'UI Element', score: 0.6 },
                   { description: 'Button', score: 0.5 },
                   { description: 'Form', score: 0.4 },
-                  { description: 'Navigation', score: 0.3 }
+                  { description: 'Navigation', score: 0.3 },
+                  { description: 'Interface', score: 0.2 }
                 ],
                 localizedObjectAnnotations: []
               }]

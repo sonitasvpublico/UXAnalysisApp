@@ -87,12 +87,16 @@ function App() {
         const isUsingTesseract = visionData.labelAnnotations && 
           visionData.labelAnnotations.some((label: any) => 
             label.description === 'Text' || label.description === 'Document' || label.description === 'Screenshot'
-          );
+          ) && 
+          // Solo es Tesseract si NO hay datos de Google Vision API reales
+          !visionData.textAnnotations?.some((text: any) => text.description && text.description.length > 50);
         console.log("🔍 Is using Tesseract:", isUsingTesseract);
         setIsTesseractMode(isUsingTesseract);
         
         finalAnalysis = generateAnalysisResultsFromAI(visionData, imgDims?.width, imgDims?.height, currentLanguage as Language);
         console.log("📊 Generated analysis results:", finalAnalysis.length, "items");
+        console.log("📊 Analysis results content:", finalAnalysis);
+        console.log("📊 Vision data used:", visionData);
         
         // Si la IA no produjo ningún resultado procesable, usar fallback para no mostrar una pantalla vacía.
         if (finalAnalysis.length === 0) {
