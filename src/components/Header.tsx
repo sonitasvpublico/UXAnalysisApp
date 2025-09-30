@@ -38,6 +38,32 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
               <p className="hidden md:block text-sm text-gray-500 font-extralight -mt-1 font-poppins">
                 {getTranslation(currentLanguage, 'subtitle')}
               </p>
+              {/* Development Banner */}
+              <div className="mt-1 px-2 py-1 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-md">
+                <p className="text-xs text-blue-600 font-medium font-poppins flex items-center">
+                  {/* Icono solo visible en desktop */}
+                  <Sparkles className="h-3 w-3 mr-1 hidden md:block" />
+                  {/* Texto completo en ambos dispositivos */}
+                  {currentLanguage === 'en' && (
+                    <>
+                      <span className="hidden md:inline">⚡ </span>
+                      Development Phase - Advanced AI Analysis Coming Soon
+                    </>
+                  )}
+                  {currentLanguage === 'es' && (
+                    <>
+                      <span className="hidden md:inline">⚡ </span>
+                      Fase de Desarrollo - Análisis IA Avanzado Próximamente
+                    </>
+                  )}
+                  {currentLanguage === 'fi' && (
+                    <>
+                      <span className="hidden md:inline">⚡ </span>
+                      Kehitysvaihe - Edistynyt tekoälyanalyysi tulossa pian
+                    </>
+                  )}
+                </p>
+              </div>
             </div>
           </div>
 

@@ -319,6 +319,123 @@ export const analyzeImage = async (
 };
 
 // Nueva función específica para obtener solo consejos de localización
+// Función para generar mock data cuando la API no está disponible
+function getMockAnalysisData(): any {
+  console.log('🎭 Generating mock analysis data...');
+  
+  return {
+    responses: [{
+      textAnnotations: [
+        {
+          description: "Sample UI Text Detected",
+          boundingPoly: {
+            vertices: [
+              { x: 10, y: 10 },
+              { x: 200, y: 10 },
+              { x: 200, y: 30 },
+              { x: 10, y: 30 }
+            ]
+          }
+        },
+        {
+          description: "Login",
+          boundingPoly: {
+            vertices: [
+              { x: 50, y: 100 },
+              { x: 100, y: 100 },
+              { x: 100, y: 120 },
+              { x: 50, y: 120 }
+            ]
+          }
+        },
+        {
+          description: "Email",
+          boundingPoly: {
+            vertices: [
+              { x: 50, y: 150 },
+              { x: 100, y: 150 },
+              { x: 100, y: 170 },
+              { x: 50, y: 170 }
+            ]
+          }
+        }
+      ],
+      labelAnnotations: [
+        { description: 'Text', score: 0.9 },
+        { description: 'Document', score: 0.8 },
+        { description: 'Screenshot', score: 0.7 },
+        { description: 'UI Element', score: 0.6 },
+        { description: 'Button', score: 0.5 },
+        { description: 'Form', score: 0.4 },
+        { description: 'Navigation', score: 0.3 },
+        { description: 'Interface', score: 0.2 }
+      ],
+      localizedObjectAnnotations: [
+        {
+          name: 'Button',
+          score: 0.85,
+          boundingPoly: {
+            normalizedVertices: [
+              { x: 0.1, y: 0.8 },
+              { x: 0.3, y: 0.8 },
+              { x: 0.3, y: 0.9 },
+              { x: 0.1, y: 0.9 }
+            ]
+          }
+        },
+        {
+          name: 'Text Input',
+          score: 0.92,
+          boundingPoly: {
+            normalizedVertices: [
+              { x: 0.2, y: 0.3 },
+              { x: 0.8, y: 0.3 },
+              { x: 0.8, y: 0.4 },
+              { x: 0.2, y: 0.4 }
+            ]
+          }
+        },
+        {
+          name: 'Image',
+          score: 0.78,
+          boundingPoly: {
+            normalizedVertices: [
+              { x: 0.1, y: 0.1 },
+              { x: 0.4, y: 0.1 },
+              { x: 0.4, y: 0.3 },
+              { x: 0.1, y: 0.3 }
+            ]
+          }
+        },
+        {
+          name: 'Navigation Menu',
+          score: 0.88,
+          boundingPoly: {
+            normalizedVertices: [
+              { x: 0.0, y: 0.0 },
+              { x: 1.0, y: 0.0 },
+              { x: 1.0, y: 0.1 },
+              { x: 0.0, y: 0.1 }
+            ]
+          }
+        },
+        {
+          name: 'Footer',
+          score: 0.91,
+          boundingPoly: {
+            normalizedVertices: [
+              { x: 0.0, y: 0.9 },
+              { x: 1.0, y: 0.9 },
+              { x: 1.0, y: 1.0 },
+              { x: 0.0, y: 1.0 }
+            ]
+          }
+        }
+      ]
+    }]
+  };
+}
+
 export const getLocalizationAdviceOnly = (
   language: Language,
   targetCountry: string,
@@ -339,15 +456,16 @@ export const getLocalizationAdviceOnly = (
 };
 
 export async function analyzeImageWithVisionAPI(base64Image: string): Promise<any> {
-  const apiKey = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
+  // API Key deshabilitada temporalmente para proteger saldo
+  const apiKey = 'TU_API_key_AQUI'; // import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
   const apiURL = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
 
   console.log('🔑 API Key present:', !!apiKey);
   console.log('🔑 API Key valid:', apiKey !== 'TU_API_key_AQUI');
 
   if (!apiKey || apiKey === 'TU_API_key_AQUI') {
-    console.warn('⚠️ Google Vision API key is not set. Using Tesseract.js fallback.');
-    return await analyzeImageWithTesseract(base64Image);
+    console.warn('⚠️ Google Vision API key is not set. Using mock data fallback.');
+    return getMockAnalysisData();
   }
 
   try {
@@ -468,7 +586,7 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
             await worker.terminate();
             console.log('✅ Tesseract worker terminated');
 
-            // Simular la estructura de respuesta de Google Vision API
+            // Simular la estructura de respuesta de Google Vision API con mock data mejorado
             const mockResponse = {
               responses: [{
                 textAnnotations: [
@@ -505,7 +623,68 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
                   { description: 'Navigation', score: 0.3 },
                   { description: 'Interface', score: 0.2 }
                 ],
-                localizedObjectAnnotations: []
+                localizedObjectAnnotations: [
+                  {
+                    name: 'Button',
+                    score: 0.85,
+                    boundingPoly: {
+                      normalizedVertices: [
+                        { x: 0.1, y: 0.8 },
+                        { x: 0.3, y: 0.8 },
+                        { x: 0.3, y: 0.9 },
+                        { x: 0.1, y: 0.9 }
+                      ]
+                    }
+                  },
+                  {
+                    name: 'Text Input',
+                    score: 0.92,
+                    boundingPoly: {
+                      normalizedVertices: [
+                        { x: 0.2, y: 0.3 },
+                        { x: 0.8, y: 0.3 },
+                        { x: 0.8, y: 0.4 },
+                        { x: 0.2, y: 0.4 }
+                      ]
+                    }
+                  },
+                  {
+                    name: 'Image',
+                    score: 0.78,
+                    boundingPoly: {
+                      normalizedVertices: [
+                        { x: 0.1, y: 0.1 },
+                        { x: 0.4, y: 0.1 },
+                        { x: 0.4, y: 0.3 },
+                        { x: 0.1, y: 0.3 }
+                      ]
+                    }
+                  },
+                  {
+                    name: 'Navigation Menu',
+                    score: 0.88,
+                    boundingPoly: {
+                      normalizedVertices: [
+                        { x: 0.0, y: 0.0 },
+                        { x: 1.0, y: 0.0 },
+                        { x: 1.0, y: 0.1 },
+                        { x: 0.0, y: 0.1 }
+                      ]
+                    }
+                  },
+                  {
+                    name: 'Footer',
+                    score: 0.91,
+                    boundingPoly: {
+                      normalizedVertices: [
+                        { x: 0.0, y: 0.9 },
+                        { x: 1.0, y: 0.9 },
+                        { x: 1.0, y: 1.0 },
+                        { x: 0.0, y: 1.0 }
+                      ]
+                    }
+                  }
+                ]
               }]
             };
 
@@ -553,7 +732,68 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
           { description: 'Document', score: 0.7 },
           { description: 'UI Element', score: 0.6 }
         ],
-        localizedObjectAnnotations: []
+        localizedObjectAnnotations: [
+          {
+            name: 'Button',
+            score: 0.85,
+            boundingPoly: {
+              normalizedVertices: [
+                { x: 0.1, y: 0.8 },
+                { x: 0.3, y: 0.8 },
+                { x: 0.3, y: 0.9 },
+                { x: 0.1, y: 0.9 }
+              ]
+            }
+          },
+          {
+            name: 'Text Input',
+            score: 0.92,
+            boundingPoly: {
+              normalizedVertices: [
+                { x: 0.2, y: 0.3 },
+                { x: 0.8, y: 0.3 },
+                { x: 0.8, y: 0.4 },
+                { x: 0.2, y: 0.4 }
+              ]
+            }
+          },
+          {
+            name: 'Image',
+            score: 0.78,
+            boundingPoly: {
+              normalizedVertices: [
+                { x: 0.1, y: 0.1 },
+                { x: 0.4, y: 0.1 },
+                { x: 0.4, y: 0.3 },
+                { x: 0.1, y: 0.3 }
+              ]
+            }
+          },
+          {
+            name: 'Navigation Menu',
+            score: 0.88,
+            boundingPoly: {
+              normalizedVertices: [
+                { x: 0.0, y: 0.0 },
+                { x: 1.0, y: 0.0 },
+                { x: 1.0, y: 0.1 },
+                { x: 0.0, y: 0.1 }
+              ]
+            }
+          },
+          {
+            name: 'Footer',
+            score: 0.91,
+            boundingPoly: {
+              normalizedVertices: [
+                { x: 0.0, y: 0.9 },
+                { x: 1.0, y: 0.9 },
+                { x: 1.0, y: 1.0 },
+                { x: 0.0, y: 1.0 }
+              ]
+            }
+          }
+        ]
       }]
     };
   }
