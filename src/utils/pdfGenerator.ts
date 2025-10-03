@@ -322,12 +322,22 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     if (isNativeMobile()) {
       try {
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
+        
+        // Para iOS, usar Directory.Data que es más accesible
+        const directory = Capacitor.getPlatform() === 'ios' ? Directory.Data : Directory.External;
+        
         await Filesystem.writeFile({
           path: fileName,
           data: pdfBase64,
-          directory: Directory.Documents,
+          directory: directory,
         });
-        alert('¡Listo! El reporte se guardó en Documentos.');
+        
+        // Mensaje específico para iOS
+        if (Capacitor.getPlatform() === 'ios') {
+          alert('¡Listo! El reporte se guardó en Files.');
+        } else {
+          alert('¡Listo! El reporte se guardó en Files.');
+        }
       } catch (fsError) {
         const msg = typeof fsError === 'object' && fsError && 'message' in fsError ? (fsError as any).message : String(fsError);
         alert('Error guardando el PDF en el dispositivo: ' + msg);

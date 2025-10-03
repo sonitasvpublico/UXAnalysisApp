@@ -39,6 +39,22 @@
   }
 }
 
+/* iPhone-specific header spacing - More specific and robust */
+@media (max-width: 640px) {
+  header.pt-iphone {
+    padding-top: 50px !important;
+  }
+}
+
+/* Additional iOS-specific rule for extra safety */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 640px) {
+    header.pt-iphone {
+      padding-top: 50px !important;
+    }
+  }
+}
+
 /* Mobile-specific improvements */
 @media (max-width: 640px) {
   /* Ensure proper spacing on mobile */
@@ -67,11 +83,7 @@
 }
 
 /* iPhone-specific header spacing */
-@supports (-webkit-touch-callout: none) {
-  header {
-    padding-top: 120px !important;
-  }
-}
+/* Removed conflicting CSS rule */
 
 /* Tablet-specific improvements */
 @media (min-width: 641px) and (max-width: 1024px) {
