@@ -66,6 +66,13 @@
   }
 }
 
+/* iPhone-specific header spacing */
+@supports (-webkit-touch-callout: none) {
+  header {
+    padding-top: 80px !important;
+  }
+}
+
 /* Tablet-specific improvements */
 @media (min-width: 641px) and (max-width: 1024px) {
   /* Optimize for tablet landscape */
