@@ -69,7 +69,7 @@
 /* iPhone-specific header spacing */
 @supports (-webkit-touch-callout: none) {
   header {
-    padding-top: 80px !important;
+    padding-top: 120px !important;
   }
 }
 

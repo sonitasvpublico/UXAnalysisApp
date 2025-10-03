@@ -21,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
 
   return (
     <>
-      <header className="px-4 sm:px-6 lg:px-8 pb-4 bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-md" style={{ paddingTop: '80px' }}>
+      <header className="px-4 sm:px-6 lg:px-8 pb-4 bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-md" style={{ paddingTop: '120px' }}>
         <div className="container mx-auto flex items-center justify-between">
           {/* Logo and Title */}
            <div className="flex items-center space-x-2">
