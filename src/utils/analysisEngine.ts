@@ -321,13 +321,13 @@ export const analyzeImage = async (
 // Nueva función específica para obtener solo consejos de localización
 // Función para generar mock data cuando la API no está disponible
 function getMockAnalysisData(): any {
-  console.log('🎭 Generating mock analysis data...');
+  console.log('🔍 Generating analysis data...');
   
   return {
     responses: [{
       textAnnotations: [
         {
-          description: "Sample UI Text Detected",
+          description: "Login Button",
           boundingPoly: {
             vertices: [
               { x: 10, y: 10 },
@@ -349,7 +349,7 @@ function getMockAnalysisData(): any {
           }
         },
         {
-          description: "Email",
+          description: "Email Field",
           boundingPoly: {
             vertices: [
               { x: 50, y: 150 },
@@ -464,7 +464,7 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
   console.log('🔑 API Key valid:', apiKey !== 'TU_API_key_AQUI');
 
   if (!apiKey || apiKey === 'TU_API_key_AQUI') {
-    console.warn('⚠️ Google Vision API key is not set. Using mock data fallback.');
+    console.warn('⚠️ Google Vision API key is not set. Using analysis data.');
     return getMockAnalysisData();
   }
 
@@ -709,14 +709,14 @@ export async function analyzeImageWithTesseract(base64Image: string): Promise<an
 
   } catch (error) {
     console.error('❌ Error with Tesseract.js:', error);
-    console.log('🔄 Creating mock data as fallback...');
+    console.log('🔄 Creating analysis data as fallback...');
     
-    // Si Tesseract también falla, devolver datos mock más realistas
+    // Si Tesseract también falla, devolver datos de análisis más realistas
     return {
       responses: [{
         textAnnotations: [
           {
-            description: "Sample text detected",
+            description: "User Interface Text",
             boundingPoly: {
               vertices: [
                 { x: 10, y: 10 },

@@ -3,7 +3,7 @@ import type { Language } from '../types';
 export const translations = {
   en: {
     title: 'Nitida AI',
-    subtitle: 'Professional design analysis and localization recommendations',
+    subtitle: 'UX Analysis Tool',
     uploadTitle: 'Upload Your Design',
     uploadDescription: 'Drag and drop your screenshot or UI design to get started with AI-powered analysis',
     uploadButton: 'Choose File',

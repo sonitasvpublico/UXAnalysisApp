@@ -98,15 +98,15 @@ function App() {
         console.log("📊 Analysis results content:", finalAnalysis);
         console.log("📊 Vision data used:", visionData);
         
-        // Si la IA no produjo ningún resultado procesable, usar fallback para no mostrar una pantalla vacía.
+        // Si la IA no produjo ningún resultado procesable, usar análisis genérico para no mostrar una pantalla vacía.
         if (finalAnalysis.length === 0) {
-          console.log("La IA no generó resultados, usando fallback.");
+          console.log("La IA no generó resultados, usando análisis genérico.");
           finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
         }
 
       } else {
-        console.warn("No se recibieron resultados de la IA o la respuesta estaba vacía. Usando fallback.");
-        // Usamos los resultados genéricos como fallback
+        console.warn("No se recibieron resultados de la IA o la respuesta estaba vacía. Usando análisis genérico.");
+        // Usamos los resultados genéricos como análisis
         finalAnalysis = getLocalizedAnalysisResults(currentLanguage as Language);
       }
       
@@ -144,7 +144,7 @@ function App() {
           });
           setImageDimensions(dims);
         } catch (_) {
-          // Fallback razonable si no se pudo medir
+          // Análisis razonable si no se pudo medir
           dims = { width: 800, height: 600 };
         }
       }

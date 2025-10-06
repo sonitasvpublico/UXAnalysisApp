@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Tag, Type, Box, Cpu } from 'lucide-react';
+import { Sparkles, Tag, Type, Box, Cpu, Eye } from 'lucide-react';
 import type { AIDetectionResult } from '../types';
 import { getTranslation } from '../utils/translations';
 import type { Language } from '../types';
@@ -111,7 +111,7 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({
         {/* Header */}
         <div className="flex items-center justify-center mb-6">
           <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-2 rounded-xl shadow-lg mr-3">
-            <Sparkles className="h-5 w-5 text-white" />
+            <Eye className="h-5 w-5 text-white" />
           </div>
           <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             AI Detected Elements

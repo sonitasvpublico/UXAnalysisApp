@@ -3,6 +3,7 @@ import { Eye, Globe, Sparkles, Menu, X, Info, FileText } from 'lucide-react';
 import type { Language } from '../types';
 import { getTranslation } from '../utils/translations';
 import AboutModal from './AboutModal';
+import headerLogo from '../assets/images/logos/header-logo.svg';
 
 interface HeaderProps {
   currentLanguage: Language;
@@ -21,45 +22,39 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
 
   return (
     <>
-      <header className="px-4 sm:px-6 lg:px-8 pb-4 bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-md pt-iphone">
+      <header className="px-4 sm:px-6 lg:px-8 pb-4 bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-md">
         <div className="container mx-auto flex items-center justify-between">
           {/* Logo and Title */}
            <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-                <Eye className="h-6 w-6 text-white" />
-            </div>
             <div className="flex flex-col">
               <div className="flex items-center space-x-1.5">
-                <Sparkles className="h-4 w-4 text-purple-500" />
-                <h1 className="font-poppins text-xl font-bold bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 bg-clip-text text-transparent">
-                {getTranslation(currentLanguage, 'title')}
-              </h1>
+                <img 
+                  src={headerLogo} 
+                  alt="Nitida AI Logo" 
+                  className="h-10 w-auto"
+                />
               </div>
-              <p className="hidden md:block text-sm text-gray-500 font-extralight -mt-1 font-poppins">
-                {getTranslation(currentLanguage, 'subtitle')}
-              </p>
-              {/* Development Banner */}
-              <div className="mt-1 px-2 py-1 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-md">
+              {/* Development Banner - Hidden */}
+              <div className="mt-1 px-2 py-1 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-md hidden">
                 <p className="text-xs text-blue-600 font-medium font-poppins flex items-center">
                   {/* Icono solo visible en desktop */}
-                  <Sparkles className="h-3 w-3 mr-1 hidden md:block" />
                   {/* Texto completo en ambos dispositivos */}
                   {currentLanguage === 'en' && (
                     <>
                       <span className="hidden md:inline">⚡ </span>
-                      Development Phase - Advanced AI Analysis Coming Soon
+                      AI Analysis Powered by Local Processing
                     </>
                   )}
                   {currentLanguage === 'es' && (
                     <>
                       <span className="hidden md:inline">⚡ </span>
-                      Fase de Desarrollo - Análisis IA Avanzado Próximamente
+                      Análisis IA con Procesamiento Local
                     </>
                   )}
                   {currentLanguage === 'fi' && (
                     <>
                       <span className="hidden md:inline">⚡ </span>
-                      Kehitysvaihe - Edistynyt tekoälyanalyysi tulossa pian
+                      Tekoälyanalyysi paikallisella käsittelyllä
                     </>
                   )}
                 </p>
