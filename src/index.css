@@ -58,15 +58,15 @@
 @supports (padding-top: env(safe-area-inset-top)) {
   @media (max-width: 767px) {
     header {
-      padding-top: calc(env(safe-area-inset-top) + 16px) !important;
+      padding-top: calc(env(safe-area-inset-top) + 20px) !important;
     }
   }
 }
 
-/* Mobile fallback */
+/* Mobile fallback - iPhone específico */
 @media (max-width: 767px) {
   header {
-    padding-top: 16px !important;
+    padding-top: 50px !important;
   }
 }
 
