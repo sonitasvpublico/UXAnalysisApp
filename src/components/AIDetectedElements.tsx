@@ -114,7 +114,7 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({
             <Eye className="h-5 w-5 text-white" />
           </div>
           <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-            AI Detected Elements
+            {getTranslation(currentLanguage, 'aiDetectedElements')}
           </h3>
           {isTesseractMode && (
             <div className="ml-4 flex items-center px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium">
@@ -125,8 +125,8 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({
         </div>
 
         {/* Results Sections */}
-        {renderSection('Labels', <Tag className="h-5 w-5 text-white" />, results.labelAnnotations)}
-        {renderSection('Text', <Type className="h-5 w-5 text-white" />, results.textAnnotations?.slice(1))}
+        {renderSection(getTranslation(currentLanguage, 'labels'), <Tag className="h-5 w-5 text-white" />, results.labelAnnotations)}
+        {renderSection(getTranslation(currentLanguage, 'text'), <Type className="h-5 w-5 text-white" />, results.textAnnotations?.slice(1))}
         {results.localizedObjectAnnotations && results.localizedObjectAnnotations.length > 0 && (
           <div className="mb-6 last:mb-0">
             <div className="flex items-center mb-4">
@@ -134,7 +134,7 @@ const AIDetectedElements: React.FC<AIDetectedElementsProps> = ({
                 <Box className="h-5 w-5 text-white" />
               </div>
               <h4 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Objects
+                {getTranslation(currentLanguage, 'objects')}
               </h4>
             </div>
             <div className="flex flex-wrap gap-3">

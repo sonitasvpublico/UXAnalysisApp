@@ -38,6 +38,14 @@ export const translations = {
       fi: 'Finnish',
     },
     target_market_label: 'Select Target Market',
+    downloadAppTitle: 'Download Nitida AI App',
+    downloadAppDescription: 'Get the full experience with our mobile app. Available for iOS and Android devices.',
+    downloadAppNote: 'Enhanced features and offline analysis available in the mobile app',
+    aiDetectedElements: 'AI Detected Elements',
+    labels: 'Labels',
+    text: 'Text',
+    objects: 'Objects',
+    advancedAnalysisNotice: 'Advanced analysis coming in future updates',
     aiAnalysis: {
       lowResTitle: 'Low Image Resolution',
       lowResDesc: 'The image resolution is low ({width}x{height}px). This can affect clarity and perceived quality.',
@@ -80,9 +88,9 @@ export const translations = {
       feature3Title: "In-Depth Reports",
       feature3Desc: "Generates comprehensive reports with actionable suggestions to improve your design.",
       footer: {
-        prefix: "About Nitida AI's creator",
+        prefix: "About Nitida AI's creator ",
         creator: "About the creator",
-        suffix: "."
+        suffix: ""
       }
     },
     pdf_summary: 'Summary of analysis',
@@ -132,6 +140,14 @@ export const translations = {
       fi: 'Finlandés',
     },
     target_market_label: 'Seleccionar Mercado Objetivo',
+    downloadAppTitle: 'Descarga la App Nitida AI',
+    downloadAppDescription: 'Obtén la experiencia completa con nuestra aplicación móvil. Disponible para dispositivos iOS y Android.',
+    downloadAppNote: 'Características mejoradas y análisis offline disponibles en la aplicación móvil',
+    aiDetectedElements: 'Elementos Detectados por IA',
+    labels: 'Etiquetas',
+    text: 'Texto',
+    objects: 'Objetos',
+    advancedAnalysisNotice: 'Análisis avanzado disponible en futuras actualizaciones',
     aiAnalysis: {
       lowResTitle: 'Resolución de imagen baja',
       lowResDesc: 'La resolución de la imagen es baja ({width}x{height}px). Esto puede afectar la claridad y la calidad percibida.',
@@ -174,9 +190,9 @@ export const translations = {
       feature3Title: "Informes Detallados",
       feature3Desc: "Genera informes completos con sugerencias prácticas para mejorar tu diseño.",
       footer: {
-        prefix: "Sobre la creadora de Nitida AI",
+        prefix: "Sobre la creadora de Nitida AI ",
         creator: "Sobre la creadora",
-        suffix: "."
+        suffix: ""
       }
     },
     pdf_summary: 'Resumen del análisis',
@@ -226,6 +242,14 @@ export const translations = {
       fi: 'Suomi',
     },
     target_market_label: 'Valitse Kohdemarkkina',
+    downloadAppTitle: 'Lataa Nitida AI -sovellus',
+    downloadAppDescription: 'Hanki täydellinen kokemus mobiilisovelluksellamme. Saatavilla iOS- ja Android-laitteille.',
+    downloadAppNote: 'Parannetut ominaisuudet ja offline-analyysi saatavilla mobiilisovelluksessa',
+    aiDetectedElements: 'Tekoälyn Havaitut Elementit',
+    labels: 'Tunnisteet',
+    text: 'Teksti',
+    objects: 'Objektit',
+    advancedAnalysisNotice: 'Edistynyt analyysi tulevissa päivityksissä',
     aiAnalysis: {
       lowResTitle: 'Matala kuvan resoluutio',
       lowResDesc: 'Kuvan resoluutio on matala ({width}x{height}px). Tämä voi vaikuttaa selkeyteen ja koettuun laatuun.',
@@ -268,9 +292,9 @@ export const translations = {
       feature3Title: "Yksityiskohtaiset Raportit",
       feature3Desc: "Luo kattavia raportteja, joissa on käytännön ehdotuksia suunnittelusi parantamiseksi.",
       footer: {
-        prefix: "Tietoja Nitida AI:n luojasta",
+        prefix: "Tietoja Nitida AI:n luojasta ",
         creator: "Tietoja luojasta",
-        suffix: "."
+        suffix: ""
       }
     },
     pdf_summary: 'Yhteenveto analyysistä',

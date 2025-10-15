@@ -485,9 +485,9 @@ export async function analyzeImageWithVisionAPI(base64Image: string): Promise<an
               { type: 'TEXT_DETECTION', maxResults: 10 },
               { type: 'OBJECT_LOCALIZATION', maxResults: 10 },
               { type: 'LABEL_DETECTION', maxResults: 10 },
-            ],
-          },
         ],
+      },
+    ],
       }),
     });
 

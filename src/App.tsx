@@ -14,6 +14,8 @@ import LoadingSpinner from './components/LoadingSpinner';
 import AnalysisResults from './components/AnalysisResults';
 import LocalizationAdvice from './components/LocalizationAdvice';
 import AIDetectedElements from './components/AIDetectedElements';
+import FloatingSidebar from './components/FloatingSidebar';
+import FloatingAppButton from './components/FloatingAppButton';
 import { useLanguage } from './hooks/useLanguage';
 import { 
   generateAnalysisResultsFromAI, 
@@ -47,6 +49,7 @@ function App() {
   const analysisRequestId = useRef(0);
   const [targetCountry, setTargetCountry] = useState('ES'); // Default to Spain
   const [error, setError] = useState<string | null>(null);
+  const [showFloatingSidebar, setShowFloatingSidebar] = useState(false);
 
   // Nueva función para iniciar análisis
   const handleStartAnalysis = () => {
@@ -122,6 +125,9 @@ function App() {
       setLocalizationAdvice(localizationData);
 
       setAppState('results');
+      
+      // Mostrar sidebar después del primer análisis exitoso
+      setShowFloatingSidebar(true);
     } catch (error) {
       console.error('Error during analysis processing:', error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred');
@@ -240,7 +246,7 @@ function App() {
         {appState === 'upload' && (
           <div className="animate-fade-in">
             <div className="max-w-2xl mx-auto mb-8 text-center">
-              <label htmlFor="country-selector" className="inline-block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3">
+              <label htmlFor="country-selector" className="inline-block text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-3 font-poppins">
                   {getTranslation(currentLanguage, 'target_market_label')}
               </label>
               <div className="relative">
@@ -347,6 +353,16 @@ function App() {
                     />
                   ) : null;
                 })()}
+                
+                {/* Advanced Analysis Notice */}
+                <div className="w-full max-w-4xl mx-auto mt-6 mb-4">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 text-center">
+                    <p className="text-sm text-blue-700 font-medium">
+                      {getTranslation(currentLanguage, 'advancedAnalysisNotice')}
+                    </p>
+                  </div>
+                </div>
+                
                 <div className="mt-8">
               <AnalysisResults
                 results={analysisResults}
@@ -371,6 +387,19 @@ function App() {
         )}
       </main>
 
+      {/* Floating Sidebar */}
+      <FloatingSidebar
+        currentLanguage={currentLanguage}
+        isVisible={showFloatingSidebar}
+        onClose={() => setShowFloatingSidebar(false)}
+      />
+
+      {/* Floating App Button */}
+      <FloatingAppButton
+        isVisible={showFloatingSidebar}
+        onOpenSidebar={() => setShowFloatingSidebar(true)}
+      />
+
       {/* Enhanced Footer */}
       <footer className="bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 text-white mt-12 sm:mt-16 relative z-10">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -381,11 +410,11 @@ function App() {
                 <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
-                UX Analysis Tool
+                Smart UX Analysis
               </h3>
             </div>
             <p className="text-blue-100 text-sm sm:text-lg font-medium mb-1 sm:mb-2">
-              Powered by <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="font-bold underline hover:text-blue-200 transition-colors">SonitaSV</a>
+              Powered by <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-200 hover:text-white transition-colors hover:bg-blue-500/20 px-2 py-1 rounded-md">SonitaSV</a>
             </p>
             <p className="text-blue-200/80 text-xs sm:text-sm">
               Supporting accessibility, usability, and global localization standards
