@@ -22,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ currentLanguage, onLanguageChange }) =>
 
   return (
     <>
-      <header className="px-4 sm:px-6 lg:px-8 pb-4 bg-white/80 backdrop-blur-xl sticky top-0 z-30 shadow-md">
+      <header className="px-4 sm:px-6 lg:px-8 pb-4 bg-white/90 backdrop-blur-md sticky top-0 z-30 border-b border-slate-300 md:border-b-0 md:bg-white/80 md:backdrop-blur-xl md:shadow-md">
         <div className="container mx-auto flex items-center justify-between">
           {/* Logo and Title */}
            <div className="flex items-center space-x-2">

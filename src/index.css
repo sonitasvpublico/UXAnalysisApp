@@ -39,18 +39,26 @@
   }
 }
 
+/* Sticky header: capa GPU para evitar saltos al hacer scroll */
+header {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  contain: layout style;
+}
+
 /* Header spacing - SIMPLE AND CLEAR */
 /* iPad ONLY - 768px to 1023px */
 @media (min-width: 768px) and (max-width: 1023px) {
   header {
-    padding-top: 40px !important;
+    padding-top: 16px !important;
   }
 }
 
 /* Desktop - 1024px and up */
 @media (min-width: 1024px) {
   header {
-    padding-top: 32px !important;
+    padding-top: 12px !important;
   }
 }
 
@@ -58,7 +66,7 @@
 @supports (padding-top: env(safe-area-inset-top)) {
   @media (max-width: 767px) {
     header {
-      padding-top: calc(env(safe-area-inset-top) + 20px) !important;
+      padding-top: calc(env(safe-area-inset-top) + 8px) !important;
     }
   }
 }
@@ -66,7 +74,7 @@
 /* Mobile fallback - iPhone específico */
 @media (max-width: 767px) {
   header {
-    padding-top: 50px !important;
+    padding-top: 20px !important;
   }
 }
 
