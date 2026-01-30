@@ -90,7 +90,7 @@ const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onRequestClose, current
         <div className="mt-10 text-center">
           <p className="text-sm text-gray-500">
             {t('footer.prefix')}
-            <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 px-1 py-0.5 rounded transition-colors">
+            <a href="https://soniazavaletatoukkari.vercel.app/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-400 hover:text-blue-300 hover:bg-blue-500/20 px-1 py-0.5 rounded transition-colors">
               SonitaSV
             </a>
           </p>

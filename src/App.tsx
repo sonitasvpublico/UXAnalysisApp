@@ -414,17 +414,8 @@ function App() {
               </h3>
             </div>
             <p className="text-blue-100 text-sm sm:text-lg font-medium mb-1 sm:mb-2">
-              Powered by <a href="https://sonitasv.com/" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-200 hover:text-white transition-colors hover:bg-blue-500/20 px-2 py-1 rounded-md">SonitaSV</a>
+              Powered by <a href="https://soniazavaletatoukkari.vercel.app/" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-200 hover:text-white transition-colors hover:bg-blue-500/20 px-2 py-1 rounded-md">SonitaSV</a>
             </p>
-            <p className="text-blue-200/80 text-xs sm:text-sm">
-              Supporting accessibility, usability, and global localization standards
-            </p>
-            <div className="mt-4 sm:mt-6 flex flex-wrap justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-blue-200/60">
-              <span>🎨 Design Analysis</span>
-              <span>♿ Accessibility</span>
-              <span>🌍 Localization</span>
-              <span>📱 Mobile-First</span>
-            </div>
           </div>
         </div>
       </footer>
