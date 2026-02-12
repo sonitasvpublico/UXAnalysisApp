@@ -46,6 +46,9 @@ export const translations = {
     text: 'Text',
     objects: 'Objects',
     advancedAnalysisNotice: 'Advanced analysis coming in future updates',
+    pdfSavedSuccess: 'Done! The report was saved to Files.',
+    pdfSaveError: 'Error saving PDF to device: ',
+    pdfGenerateError: 'Error generating PDF: ',
     aiAnalysis: {
       lowResTitle: 'Low Image Resolution',
       lowResDesc: 'The image resolution is low ({width}x{height}px). This can affect clarity and perceived quality.',
@@ -148,6 +151,9 @@ export const translations = {
     text: 'Texto',
     objects: 'Objetos',
     advancedAnalysisNotice: 'Análisis avanzado disponible en futuras actualizaciones',
+    pdfSavedSuccess: '¡Listo! El reporte se guardó en Files.',
+    pdfSaveError: 'Error guardando el PDF en el dispositivo: ',
+    pdfGenerateError: 'Error al generar el PDF: ',
     aiAnalysis: {
       lowResTitle: 'Resolución de imagen baja',
       lowResDesc: 'La resolución de la imagen es baja ({width}x{height}px). Esto puede afectar la claridad y la calidad percibida.',
@@ -250,6 +256,9 @@ export const translations = {
     text: 'Teksti',
     objects: 'Objektit',
     advancedAnalysisNotice: 'Edistynyt analyysi tulevissa päivityksissä',
+    pdfSavedSuccess: 'Valmis! Raportti tallennettiin tiedostoihin.',
+    pdfSaveError: 'Virhe tallennettaessa PDF:ää laitteelle: ',
+    pdfGenerateError: 'Virhe PDF:n luomisessa: ',
     aiAnalysis: {
       lowResTitle: 'Matala kuvan resoluutio',
       lowResDesc: 'Kuvan resoluutio on matala ({width}x{height}px). Tämä voi vaikuttaa selkeyteen ja koettuun laatuun.',

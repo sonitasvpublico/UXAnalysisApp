@@ -62,19 +62,20 @@ header {
   }
 }
 
-/* Mobile iOS - safe area */
-@supports (padding-top: env(safe-area-inset-top)) {
-  @media (max-width: 767px) {
-    header {
-      padding-top: calc(env(safe-area-inset-top) + 8px) !important;
-    }
-  }
-}
-
-/* Mobile fallback - iPhone específico */
+/* Mobile fallback - dispositivos sin safe area */
 @media (max-width: 767px) {
   header {
     padding-top: 20px !important;
+  }
+}
+
+/* Mobile iOS - safe area: header cubre desde top:0, padding empuja el contenido */
+@supports (padding-top: env(safe-area-inset-top)) {
+  @media (max-width: 767px) {
+    header {
+      top: 0 !important;
+      padding-top: calc(env(safe-area-inset-top) + 8px) !important;
+    }
   }
 }
 

@@ -332,15 +332,11 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
           directory: directory,
         });
         
-        // Mensaje específico para iOS
-        if (Capacitor.getPlatform() === 'ios') {
-          alert('¡Listo! El reporte se guardó en Files.');
-        } else {
-          alert('¡Listo! El reporte se guardó en Files.');
-        }
+        // Mensaje de éxito traducido
+        alert(getTranslation(currentLanguage, 'pdfSavedSuccess'));
       } catch (fsError) {
         const msg = typeof fsError === 'object' && fsError && 'message' in fsError ? (fsError as any).message : String(fsError);
-        alert('Error guardando el PDF en el dispositivo: ' + msg);
+        alert(getTranslation(currentLanguage, 'pdfSaveError') + msg);
         throw fsError;
       }
     } else {
@@ -348,6 +344,6 @@ export const generateBeautifulPDF = async (data: PDFReportData): Promise<void> =
     }
   } catch (error) {
     const msg = typeof error === 'object' && error && 'message' in error ? (error as any).message : String(error);
-    alert('Error al generar el PDF: ' + msg);
+    alert(getTranslation(currentLanguage, 'pdfGenerateError') + msg);
   }
 }; 

@@ -29,7 +29,7 @@ import type {
   AIDetectionResult,
   Language
 } from './types';
-import { RefreshCw, Sparkles, ChevronDown } from 'lucide-react';
+import { RefreshCw, Sparkles, ChevronDown, Info } from 'lucide-react';
 import { getTranslation } from './utils/translations';
 import { localizationRules } from './utils/localizationRules';
 import { generateBeautifulPDF } from './utils/pdfGenerator.ts';
@@ -356,8 +356,9 @@ function App() {
                 
                 {/* Advanced Analysis Notice */}
                 <div className="w-full max-w-4xl mx-auto mt-6 mb-4">
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4 text-center">
-                    <p className="text-sm text-blue-700 font-medium">
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4">
+                    <p className="text-sm text-blue-700 font-medium flex items-center justify-center gap-2">
+                      <Info className="h-4 w-4 flex-shrink-0" />
                       {getTranslation(currentLanguage, 'advancedAnalysisNotice')}
                     </p>
                   </div>
@@ -399,26 +400,6 @@ function App() {
         isVisible={showFloatingSidebar}
         onOpenSidebar={() => setShowFloatingSidebar(true)}
       />
-
-      {/* Enhanced Footer */}
-      <footer className="bg-gradient-to-r from-slate-900 via-blue-900 to-purple-900 text-white mt-12 sm:mt-16 relative z-10">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 sm:p-3 rounded-lg sm:rounded-xl">
-                <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              </div>
-              <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
-                Smart UX Analysis
-              </h3>
-            </div>
-            <p className="text-blue-100 text-sm sm:text-lg font-medium mb-1 sm:mb-2">
-              Powered by <a href="https://soniazavaletatoukkari.vercel.app/" target="_blank" rel="noopener noreferrer" className="font-bold text-blue-200 hover:text-white transition-colors hover:bg-blue-500/20 px-2 py-1 rounded-md">SonitaSV</a>
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
